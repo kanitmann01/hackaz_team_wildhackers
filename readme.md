@@ -67,6 +67,12 @@
 
 ## About The Project
 
+We are still planning on which project to go with, here are the top 4 contestants:
+-  Higher Education Trends Across the Globe for students
+- Peer-to-peer translation tool
+- Sustainibility App for students
+- Synthetic Data Generator for privacy
+
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 ### Built With
