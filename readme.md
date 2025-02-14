@@ -2,7 +2,7 @@
 - Member 1: Kanit Mann
 - Member 2: Tanishk Singh
 
-[Project Documentation File 🚀](https://github.com/kanitmann01/hackaz_team_wildhackers/blob/main/Project%20Documentation%20HackAZ%20-%20Kanit%20Mann%20%7C%20Tanishk%20Singh.pdf)
+[Project Documentation File 🚀](https://github.com/kanitmann01/hackaz_team_wildhackers/blob/main/Project%20Documentation%20hackaz.pdf)
 
 <span style="display:block;text-align:center">
 
