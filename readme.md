@@ -72,6 +72,7 @@ We are still planning on which project to go with, here are the top 4 contestant
 - Peer-to-peer translation tool
 - Sustainibility App for students
 - Synthetic Data Generator for privacy
+- Drought Prediction to mitigate farmer suicides
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
