@@ -3,11 +3,14 @@ import sys
 import torch
 import time
 import argparse
+import whisper
+
 
 # Add parent directory to path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 # Import model classes
+model = whisper.load_model("tiny")
 from transformers import (
     Wav2Vec2Processor,
     Wav2Vec2ForCTC,

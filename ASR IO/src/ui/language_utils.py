@@ -1,6 +1,6 @@
 """
-Language utility functions for the real-time translation system.
-This module handles language code mappings and conversions between different models.
+Simplified language utility functions for the real-time translation system.
+Focuses on Whisper ASR model and provides mappings for NLLB and MMS-TTS.
 """
 
 # ISO language codes to human-readable names
@@ -27,10 +27,9 @@ ISO_LANGUAGES = {
     "th": "Thai"
 }
 
-# Language code mappings for different models
 class LanguageMapper:
     """
-    Handles language code mappings between different model formats.
+    Simplified language code mappings optimized for Whisper.
     """
     
     @staticmethod
@@ -39,32 +38,19 @@ class LanguageMapper:
         return ISO_LANGUAGES
     
     @staticmethod
-    def iso_to_wav2vec(iso_code):
+    def get_whisper_language(iso_code):
         """
-        Convert ISO code to appropriate Wav2Vec 2.0 model name.
+        Get Whisper language code from ISO code.
+        Whisper uses the same codes as ISO 639-1 in most cases.
         
         Args:
             iso_code: ISO language code (e.g., "en")
             
         Returns:
-            str: Wav2Vec model name for the language
+            str: Whisper language code
         """
-        wav2vec_models = {
-            "en": "facebook/wav2vec2-large-960h-lv60-self",
-            # Use XLSR for non-English languages
-            "es": "facebook/wav2vec2-large-xlsr-53",
-            "fr": "facebook/wav2vec2-large-xlsr-53",
-            "de": "facebook/wav2vec2-large-xlsr-53",
-            "it": "facebook/wav2vec2-large-xlsr-53",
-            "pt": "facebook/wav2vec2-large-xlsr-53",
-            "ru": "facebook/wav2vec2-large-xlsr-53",
-            "zh": "facebook/wav2vec2-large-xlsr-53",
-            "ja": "facebook/wav2vec2-large-xlsr-53",
-            "ar": "facebook/wav2vec2-large-xlsr-53",
-            "hi": "facebook/wav2vec2-large-xlsr-53"
-        }
-        
-        return wav2vec_models.get(iso_code, "facebook/wav2vec2-large-xlsr-53")
+        # Whisper uses ISO 639-1 codes directly in most cases
+        return iso_code.lower()
     
     @staticmethod
     def iso_to_nllb(iso_code):
@@ -104,7 +90,8 @@ class LanguageMapper:
         if "_" in iso_code:
             return iso_code
             
-        return nllb_codes.get(iso_code, "eng_Latn")  # Default to English
+        # Always return a valid code, defaulting to English for unknown languages
+        return nllb_codes.get(iso_code.lower(), "eng_Latn")
     
     @staticmethod
     def iso_to_mms(iso_code):
@@ -115,7 +102,7 @@ class LanguageMapper:
             iso_code: ISO language code (e.g., "en")
             
         Returns:
-            str: MMS-TTS language code and model name
+            tuple: (MMS-TTS language code, model name)
         """
         mms_codes = {
             "en": ("eng", "facebook/mms-tts-eng"),
@@ -127,8 +114,18 @@ class LanguageMapper:
             "ru": ("rus", "facebook/mms-tts-rus"),
             "zh": ("cmn", "facebook/mms-tts-cmn"),
             "ja": ("jpn", "facebook/mms-tts-jpn"),
+            "ko": ("kor", "facebook/mms-tts-eng"),  # Use English if no Korean model
             "ar": ("ara", "facebook/mms-tts-ara"),
-            "hi": ("hin", "facebook/mms-tts-hin")
+            "hi": ("hin", "facebook/mms-tts-hin"),
+            "bn": ("eng", "facebook/mms-tts-eng"),  # Use English for Bengali if no Bengali model
+            "sw": ("eng", "facebook/mms-tts-eng"),  # Default to English for other languages
+            "ur": ("eng", "facebook/mms-tts-eng"),
+            "vi": ("eng", "facebook/mms-tts-eng"),
+            "te": ("eng", "facebook/mms-tts-eng"),
+            "ta": ("eng", "facebook/mms-tts-eng"),
+            "mr": ("eng", "facebook/mms-tts-eng"),
+            "th": ("eng", "facebook/mms-tts-eng")
         }
         
-        return mms_codes.get(iso_code, ("eng", "facebook/mms-tts-eng"))  # Default to English
+        # Always return a valid tuple, defaulting to English for unknown languages
+        return mms_codes.get(iso_code.lower(), ("eng", "facebook/mms-tts-eng"))

@@ -22,7 +22,7 @@ def test_asr_component(device=None):
     
     try:
         # Initialize ASR
-        asr = StreamingASR(model_name="openai/whisper-small", device=device)
+        asr = StreamingASR(model_name="openai/whisper-tiny", device=device)
         
         # Create test audio (sine wave)
         sample_rate = 16000
@@ -198,7 +198,7 @@ def test_full_pipeline(device=None):
     
     try:
         # Initialize components
-        asr = StreamingASR(model_name="openai/whisper-small", device=device)
+        asr = StreamingASR(model_name="openai/whisper-tiny", device=device)
         translator = StreamingTranslator(
             source_lang="en", 
             target_lang="es", 

@@ -1,24 +1,24 @@
 import torch
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import numpy as np
 import time
 
 class StreamingASR:
     """
-    Real-time streaming Automatic Speech Recognition using Wav2Vec 2.0.
+    Real-time streaming Automatic Speech Recognition using Whisper.
     
-    This class implements the Wav2Vec 2.0 model for real-time speech
+    This class implements the Whisper model for real-time speech
     recognition, processing audio in small chunks while maintaining context
     for better transcription continuity.
     """
     
-    def __init__(self, model_name="facebook/wav2vec2-large-960h-lv60-self", device=None, 
+    def __init__(self, model_name="openai/whisper-tiny", device=None, 
                  use_stable_chunks=True, language="en"):
         """
         Initialize the streaming ASR system.
         
         Args:
-            model_name: Wav2Vec 2.0 model name
+            model_name: Whisper model name
             device: Computation device ('cuda' or 'cpu')
             use_stable_chunks: Whether to use the stable chunk approach
             language: Source language code (default: "en" for English)
@@ -29,22 +29,18 @@ class StreamingASR:
         else:
             self.device = torch.device(device)
         
-        # Map language code to appropriate model
+        # Map language code to Whisper language
         self.language = language
-        if language != "en" and "960h" in model_name:
-            # Default to multilingual model for non-English
-            model_name = "facebook/wav2vec2-large-xlsr-53"
-            print(f"Switching to multilingual model for language '{language}'")
-            
+        
         # Load model and processor
-        print(f"Loading Wav2Vec 2.0 model '{model_name}' on {self.device}...")
-        self.processor = Wav2Vec2Processor.from_pretrained(model_name)
-        self.model = Wav2Vec2ForCTC.from_pretrained(model_name).to(self.device)
+        print(f"Loading Whisper model '{model_name}' on {self.device}...")
+        self.processor = WhisperProcessor.from_pretrained(model_name)
+        self.model = WhisperForConditionalGeneration.from_pretrained(model_name).to(self.device)
         
         # Configure for better streaming performance
         if self.device.type == 'cuda':
             self.model = self.model.half()  # Half-precision for faster processing
-        print("Wav2Vec 2.0 model loaded successfully!")
+        print("Whisper model loaded successfully!")
         
         # Context tracking
         self.use_stable_chunks = use_stable_chunks
@@ -56,7 +52,7 @@ class StreamingASR:
         
         # Streaming buffer for audio context
         self.audio_context = np.array([], dtype=np.float32)
-        self.context_duration = 1.0  # seconds of audio context to keep
+        self.context_duration = 3.0  # seconds of audio context to keep (increased from 1.0)
         self.context_samples = int(16000 * self.context_duration)
         
         # Performance tracking
@@ -84,7 +80,7 @@ class StreamingASR:
     
     def _preprocess_audio(self, audio_chunk):
         """
-        Preprocess audio for Wav2Vec 2.0 model.
+        Preprocess audio for Whisper model.
         
         Args:
             audio_chunk: NumPy array of audio samples
@@ -114,24 +110,23 @@ class StreamingASR:
         inputs = self.processor(
             context_chunk, 
             sampling_rate=16000,
-            return_tensors="pt",
-            padding=True
+            return_tensors="pt"
         )
         
-        return inputs.input_values.to(self.device)
+        return inputs.input_features.to(self.device), inputs.attention_mask.to(self.device) if hasattr(inputs, 'attention_mask') else None
     
-    def _decode_logits(self, logits):
+    def _decode_prediction(self, prediction):
         """
-        Decode CTC logits to text.
+        Decode Whisper prediction to text.
         
         Args:
-            logits: Model output logits
+            prediction: Model output prediction
             
         Returns:
             str: Decoded text
         """
-        predicted_ids = torch.argmax(logits, dim=-1)
-        transcription = self.processor.batch_decode(predicted_ids)[0]
+        # Decode prediction to text
+        transcription = self.processor.batch_decode(prediction, skip_special_tokens=True)[0]
         
         return transcription
     
@@ -140,7 +135,7 @@ class StreamingASR:
         Determine the new text from a transcription by comparing with context.
         
         Args:
-            transcription: Full transcription from Wav2Vec
+            transcription: Full transcription from Whisper
             
         Returns:
             str: New text (increment from previous context)
@@ -176,7 +171,18 @@ class StreamingASR:
         """
         start_time = time.time()
         
-        # Resample if needed (Wav2Vec 2.0 requires 16kHz)
+        # Check audio level - skip processing if below threshold (voice activity detection)
+        audio_level = np.mean(np.abs(audio_chunk))
+        if audio_level < 0.01:  # Adjust threshold based on testing
+            return {
+                'text': '',
+                'full_text': self.context_text.strip(),
+                'stable_text': self.context_text.strip(),
+                'processing_time': 0,
+                'avg_processing_time': self.total_processing_time / max(1, self.chunk_count)
+            }
+        
+        # Resample if needed (Whisper requires 16kHz)
         if sample_rate != 16000:
             # Simple resampling by linear interpolation
             resampling_factor = 16000 / sample_rate
@@ -185,14 +191,30 @@ class StreamingASR:
             audio_chunk = np.interp(indices, np.arange(len(audio_chunk)), audio_chunk)
         
         # Process audio
-        input_values = self._preprocess_audio(audio_chunk)
+        input_features, attention_mask = self._preprocess_audio(audio_chunk)
         
         # Generate transcription
         with torch.no_grad():
-            logits = self.model(input_values).logits
+            # Set decoder input based on current language
+            forced_decoder_ids = None
+            if self.language != "en":
+                # Map language code to Whisper language ID
+                lang_id = self.processor.tokenizer.get_language_id(self.language)
+                forced_decoder_ids = [(1, lang_id)]
+            
+            # Generate transcription
+            predicted_ids = self.model.generate(
+                input_features,
+                attention_mask=attention_mask,
+                forced_decoder_ids=forced_decoder_ids,
+                max_length=448  # Maximum sequence length for Whisper
+            )
             
         # Decode transcription
-        transcription = self._decode_logits(logits)
+        transcription = self._decode_prediction(predicted_ids)
+        
+        print(f"Raw transcription: {transcription}")
+        print(f"Audio input level: {np.max(np.abs(audio_chunk))}")
         
         # Identify new text
         new_text = self._determine_new_text(transcription)

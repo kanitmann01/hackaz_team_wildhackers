@@ -5,6 +5,7 @@ import threading
 import os
 import sys
 import numpy as np
+import traceback
 
 # Add parent directory to path to allow for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
@@ -14,7 +15,7 @@ from src.mt.streaming_mt import StreamingTranslator
 from src.tts.streaming_tts import StreamingTTS
 from src.audio.streaming_audio import StreamingAudioCapture, StreamingAudioPlayback
 from src.pipeline.realtime_pipeline import RealTimeTranslationPipeline
-from src.ui.language_utils import LanguageMapper
+from src.ui.language_utils import LanguageMapper, ISO_LANGUAGES
 
 # Define available languages
 LANGUAGES = LanguageMapper.get_supported_languages()
@@ -41,24 +42,35 @@ def initialize_components():
         warning_shown = True
     
     try:
-        # Create components with Wav2Vec (ASR), NLLB (MT), and VITS (TTS)
-        print("Initializing Wav2Vec 2.0 ASR model...")
-        asr_model = StreamingASR(model_name="facebook/wav2vec2-large-960h-lv60-self", device=device)
+        # Create components with Whisper (ASR), NLLB (MT), and VITS (TTS)
+        print("Initializing Whisper ASR model...")
+        from src.asr.whisper_asr import WhisperASR
+        asr_model = WhisperASR(model_name="tiny", device=device)
         
         print("Initializing NLLB-200 MT model...")
+        mt_model_name = "facebook/nllb-200-distilled-600M"
+        print(f"Using MT model: {mt_model_name}")
         mt_model = StreamingTranslator(
             source_lang="eng_Latn", 
             target_lang="spa_Latn", 
             device=device, 
-            model_name="facebook/nllb-200-distilled-600M"
+            model_name=mt_model_name
         )
         
         print("Initializing VITS TTS model...")
-        tts_model = StreamingTTS(device=device, model_name="facebook/mms-tts-eng")
+        tts_model_name = "facebook/mms-tts-eng"
+        print(f"Using TTS model: {tts_model_name}")
+        tts_model = StreamingTTS(device=device, model_name=tts_model_name)
         
         print("Initializing audio components...")
         audio_playback = StreamingAudioPlayback()
-        audio_capture = StreamingAudioCapture(callback=lambda x, y: None)  # Placeholder callback
+        
+        # Increase chunk duration for better recognition
+        audio_capture = StreamingAudioCapture(
+            callback=lambda x, y: None,  # Placeholder callback
+            chunk_duration=2.0,  # Longer chunks for better speech recognition with Whisper
+            overlap=0.2  # Higher overlap for better continuity
+        )
         
         # Create pipeline
         print("Creating pipeline...")
@@ -76,13 +88,16 @@ def initialize_components():
         print("System initialized successfully")
         
     except Exception as e:
+        import traceback
         print(f"Error initializing components: {e}")
+        print(traceback.format_exc())
         raise
 
 def ui_update_callback(source_text, translated_text):
     """Callback function for pipeline updates."""
     global source_text_global, translated_text_global, update_ui_event
     
+    print(f"UI Update: Source: '{source_text}', Translation: '{translated_text}'")
     source_text_global = source_text
     translated_text_global = translated_text
     
@@ -97,31 +112,55 @@ def start_translation(source_lang, target_lang):
         return "Translation already running. Stop it first."
     
     try:
+        # Convert language names to ISO codes
+        source_iso = None
+        target_iso = None
+        
+        print(f"Looking up ISO codes for {source_lang} and {target_lang}")
+        
+        # Find ISO codes based on language name
+        for iso, name in ISO_LANGUAGES.items():
+            if name.lower() == source_lang.lower():
+                source_iso = iso
+            if name.lower() == target_lang.lower():
+                target_iso = iso
+        
+        print(f"Found ISO codes: {source_iso} and {target_iso}")
+        
+        # If ISO codes not found, return error
+        if source_iso is None or target_iso is None:
+            return f"❌ Error: Could not find ISO codes for {source_lang} or {target_lang}"
+        
         # Create pipeline if not exists
         if pipeline is None:
+            print("Initializing components...")
             initialize_components()
         
-        # Get language codes
-        source_code = source_lang.lower()  # ISO code
-        target_code = target_lang.lower()  # ISO code
-        
         # Get model-specific language codes
-        source_nllb = LanguageMapper.iso_to_nllb(source_code)
-        target_nllb = LanguageMapper.iso_to_nllb(target_code)
-        target_mms_code, _ = LanguageMapper.iso_to_mms(target_code)
+        print(f"Getting NLLB codes for {source_iso}, {target_iso}")
+        source_nllb = LanguageMapper.iso_to_nllb(source_iso)
+        target_nllb = LanguageMapper.iso_to_nllb(target_iso)
         
-        print(f"Starting translation from {source_lang} ({source_code}) to {target_lang} ({target_code})")
+        print(f"Getting MMS code for {target_iso}")
+        target_mms_code, target_mms_model = LanguageMapper.iso_to_mms(target_iso)
+        
         print(f"NLLB codes: {source_nllb} -> {target_nllb}")
-        print(f"MMS-TTS code: {target_mms_code}")
+        print(f"MMS-TTS code: {target_mms_code}, model: {target_mms_model}")
         
         # Set languages
-        pipeline.set_languages(source_code, target_code)
+        print("Setting languages in pipeline...")
+        print(f"Setting pipeline languages to {source_iso} -> {target_iso}")
+        pipeline.set_languages(source_iso, target_iso)
         
         # Update TTS language explicitly
+        print(f"Setting TTS language to {target_mms_code}")
         pipeline.tts.set_language(target_mms_code)
         
         # Reset and start
+        print("Resetting pipeline...")
         pipeline.reset()
+        
+        print("Starting pipeline...")
         pipeline.start()
         
         running_global = True
@@ -131,6 +170,7 @@ def start_translation(source_lang, target_lang):
     except Exception as e:
         error_msg = f"❌ Error starting translation: {str(e)}"
         print(error_msg)
+        print(traceback.format_exc())
         return error_msg
 
 def stop_translation():
@@ -151,6 +191,7 @@ def stop_translation():
     except Exception as e:
         error_msg = f"❌ Error stopping translation: {str(e)}"
         print(error_msg)
+        print(traceback.format_exc())
         return error_msg
 
 def get_updates():
@@ -176,8 +217,8 @@ def get_audio_levels():
             output_level_global = max(0, output_level_global - 0.05)
             if len(translated_text_global) > len(source_text_global) - 10:
                 output_level_global = min(0.8, output_level_global + 0.2)
-        except:
-            pass
+        except Exception as e:
+            print(f"Error getting audio levels: {e}")
     
     return input_level_global, output_level_global
 
@@ -201,8 +242,8 @@ def get_stats():
             """
             
             return formatted_stats
-        except:
-            pass
+        except Exception as e:
+            print(f"Error getting stats: {e}")
     
     return "Statistics not available"
 

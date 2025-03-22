@@ -11,12 +11,12 @@ class StreamingAudioCapture:
     Captures audio in real-time streaming chunks with overlap.
     
     This class provides continuous audio recording capability by capturing
-    small chunks of audio (typically 300-500ms) with overlap between chunks
+    small chunks of audio with overlap between chunks
     to ensure no speech is lost at chunk boundaries.
     """
     
     def __init__(self, callback, sample_rate=16000, channels=1, 
-                 chunk_duration=0.5, overlap=0.1, device=None):
+                 chunk_duration=1.5, overlap=0.15, device=None):
         """
         Initialize streaming audio capture.
         
@@ -24,8 +24,8 @@ class StreamingAudioCapture:
             callback: Function to be called with each audio chunk
             sample_rate: Audio sample rate in Hz (default: 16000)
             channels: Number of audio channels (default: 1)
-            chunk_duration: Duration of each audio chunk in seconds (default: 0.5)
-            overlap: Overlap between chunks as a fraction of chunk_duration (default: 0.1)
+            chunk_duration: Duration of each audio chunk in seconds (default: 1.5)
+            overlap: Overlap between chunks as a fraction of chunk_duration (default: 0.15)
             device: Audio device to use (default: system default)
         """
         self.callback = callback
@@ -47,6 +47,10 @@ class StreamingAudioCapture:
         # Audio level monitoring
         self.current_audio_level = 0
         self.peak_audio_level = 0
+        
+        # Voice Activity Detection parameters
+        self.vad_threshold = 0.01  # Adjust based on testing
+        self.min_active_ratio = 0.1  # Minimum active frames ratio to consider speech
     
     def audio_callback(self, indata, frames, time_info, status):
         """
@@ -71,10 +75,18 @@ class StreamingAudioCapture:
         self.current_audio_level = np.mean(np.abs(current_data))
         self.peak_audio_level = max(self.peak_audio_level, np.max(np.abs(current_data)))
         
+        # Basic Voice Activity Detection
+        active_frames = np.sum(np.abs(current_data) > self.vad_threshold)
+        active_ratio = active_frames / len(current_data)
+        
+        # Debug audio levels
+        print(f"Audio level: {self.current_audio_level:.6f}, Active ratio: {active_ratio:.2f}")
+        
         # Concatenate with previous overlap to form a complete chunk
         full_chunk = np.concatenate((self.buffer, current_data))
         
-        # Queue the chunk for processing
+        # Queue the chunk for processing (whether voice detected or not,
+        # allowing the ASR module to make the final decision)
         self.audio_queue.put(full_chunk.copy())
         
         # Update buffer with overlap for next chunk
@@ -204,6 +216,7 @@ class StreamingAudioCapture:
         print(f"Audio saved to {filename}")
 
 
+# No changes needed to the StreamingAudioPlayback class
 class StreamingAudioPlayback:
     """
     Handles streaming audio playback for real-time TTS output.
