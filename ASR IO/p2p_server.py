@@ -248,6 +248,98 @@ def get_languages():
 def handle_connect():
     """Handle a new connection."""
     print(f"Client connected: {request.sid}")
+# Add this to your Socket.IO event handlers in p2p_server.py
+
+@socketio.on('leave')
+def handle_leave(data):
+    """Handle a user leaving a session."""
+    session_id = data.get('session_id')
+    user_id = data.get('user_id')
+    
+    if not session_id or not user_id:
+        emit('error', {'message': 'Missing session_id or user_id'})
+        return
+    
+    with session_lock:
+        if session_id not in sessions:
+            emit('error', {'message': 'Session not found'})
+            return
+        
+        session = sessions[session_id]
+        
+        # Check if this user is part of the session
+        if user_id != session.user1_id and user_id != session.user2_id:
+            emit('error', {'message': 'User not in this session'})
+            return
+        
+        # Remove user from session but keep the session active
+        other_user = None
+        if user_id == session.user1_id:
+            other_user = session.user2_id
+            session.user1_id = None
+        elif user_id == session.user2_id:
+            other_user = session.user1_id
+            session.user2_id = None
+        
+        # Leave the room
+        room = f"session_{session_id}"
+        leave_room(room)
+        
+        print(f"User {user_id} left session {session_id}")
+        
+        # Notify other user if connected
+        if other_user and other_user in users:
+            emit('user_left', {
+                'user_id': user_id
+            }, to=users[other_user])
+    
+    # Remove from users dict
+    if user_id in users:
+        del users[user_id]
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    """Handle a client disconnection."""
+    print(f"Client disconnected: {request.sid}")
+    
+    # Find user_id for this socket
+    user_id = None
+    for uid, sid in list(users.items()):
+        if sid == request.sid:
+            user_id = uid
+            break
+    
+    if not user_id:
+        return
+    
+    # Remove from users dict
+    del users[user_id]
+    
+    # Find session this user is part of
+    with session_lock:
+        for session_id, session in list(sessions.items()):
+            if user_id == session.user1_id or user_id == session.user2_id:
+                # Get other user
+                other_user = None
+                if user_id == session.user1_id:
+                    other_user = session.user2_id
+                    session.user1_id = None
+                elif user_id == session.user2_id:
+                    other_user = session.user1_id
+                    session.user2_id = None
+                
+                # Notify other user if connected
+                if other_user and other_user in users:
+                    emit('user_left', {
+                        'user_id': user_id
+                    }, to=users[other_user])
+                
+                # If both users gone, remove session after some time
+                if not session.user1_id and not session.user2_id:
+                    # Could implement a cleanup here if desired
+                    pass
+                
+                break
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -375,6 +467,75 @@ def handle_audio(data):
 @app.route('/static/<path:path>')
 def serve_static(path):
     return send_from_directory('templates', path)
+
+# Add this new route to your Flask app in p2p_server.py
+
+@app.route('/auto-join-session/<session_id>', methods=['GET'])
+def auto_join_session(session_id):
+    """Join an existing session by automatically selecting an available position."""
+    try:
+        with session_lock:
+            if session_id not in sessions:
+                return jsonify({'error': 'Session not found'}), 404
+            
+            session = sessions[session_id]
+            
+            # Determine which position is available
+            position = None
+            if session.user1_id is None:
+                position = 1
+            elif session.user2_id is None:
+                position = 2
+            else:
+                return jsonify({'error': 'Session is full'}), 400
+            
+            # Generate user ID
+            user_id = str(uuid.uuid4())
+            
+            # Add user to session
+            if position == 1:
+                session.user1_id = user_id
+                your_language = session.user1_lang
+                their_language = session.user2_lang
+            else:
+                session.user2_id = user_id
+                your_language = session.user2_lang
+                their_language = session.user1_lang
+            
+            # Map language codes to readable names
+            language_names = {
+                "en": "English",
+                "es": "Spanish",
+                "fr": "French",
+                "de": "German",
+                "it": "Italian",
+                "pt": "Portuguese",
+                "ru": "Russian",
+                "zh": "Chinese",
+                "ja": "Japanese",
+                "ko": "Korean",
+                "ar": "Arabic",
+                "hi": "Hindi"
+                # Add more languages as needed
+            }
+            
+            your_language_name = language_names.get(your_language, your_language)
+            their_language_name = language_names.get(their_language, their_language)
+        
+        # Return user info
+        return jsonify({
+            'user_id': user_id,
+            'session_id': session_id,
+            'position': position,
+            'your_language': your_language_name,
+            'their_language': their_language_name
+        })
+    
+    except Exception as e:
+        print(f"Error auto-joining session: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
 
 # Create simple index.html template
 def create_index_html():

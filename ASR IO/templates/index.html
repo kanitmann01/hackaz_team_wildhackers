@@ -2,287 +2,732 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>P2P Translation</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VoiceBridge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #5b6af5;
+            --secondary-color: #9747ff;
+            --accent-color: #ffc75f;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --border-radius: 12px;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-color: #f8f9fa;
+            overflow-x: hidden;
         }
 
-        .header {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .container {
-            flex: 1;
-            padding: 1rem;
-            max-width: 600px;
+        .app-container {
+            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
-        }
-
-        .chat-box {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 180px);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        .app-logo {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-logo i {
+            margin-right: 8px;
+        }
+
+        .app-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Screens */
+        .screen {
+            flex-grow: 1;
+            display: none;
+            flex-direction: column;
+            padding: 16px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 12px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover, .btn:focus {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--text-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-select, .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(91, 106, 245, 0.25);
+        }
+
+        /* Welcome Screen */
+        .welcome-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 32px 0 16px;
+            color: var(--primary-color);
+        }
+
+        .welcome-subtitle {
+            text-align: center;
+            margin-bottom: 36px;
+            color: var(--text-light);
+        }
+
+        .welcome-illustration {
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto 30px;
+            display: block;
+        }
+
+        /* Radio buttons */
+        .radio-group {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 12px;
+            text-align: center;
+            background-color: #e9ecef;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .radio-option:first-child label {
+            border-top-left-radius: var(--border-radius);
+            border-bottom-left-radius: var(--border-radius);
+        }
+
+        .radio-option:last-child label {
+            border-top-right-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .radio-option input:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Chat Screen */
+        .session-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background-color: #e9ecef;
+            border-radius: var(--border-radius);
+            font-size: 0.85rem;
+        }
+
+        .session-id {
+            font-weight: 500;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-dot.connected {
+            background-color: var(--success-color);
+        }
+
+        .status-dot.disconnected {
+            background-color: var(--danger-color);
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .language-labels {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .language-label {
+            flex: 1;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 4px;
+            color: var(--text-light);
         }
 
         .chat-messages {
-            flex: 1;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
-            padding: 1rem;
+            padding: 12px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            min-height: 200px;
         }
 
         .message {
-            margin-bottom: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 1rem;
-            max-width: 75%;
+            max-width: 80%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 16px;
+            position: relative;
             word-break: break-word;
         }
 
         .message.sent {
-            background-color: #e3f2fd;
             align-self: flex-end;
-            margin-left: auto;
+            background-color: #e3f2fd;
+            border-bottom-right-radius: 4px;
         }
 
         .message.received {
-            background-color: #f1f1f1;
             align-self: flex-start;
-        }
-
-        .message .translation {
-            margin-top: 0.25rem;
-            font-style: italic;
-            opacity: 0.8;
-        }
-
-        .controls {
-            display: flex;
-            padding: 1rem;
             background-color: #f1f1f1;
-            align-items: center;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        /* Microphone control */
+        .mic-control {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+            padding: 16px 0;
+            position: relative;
         }
 
         .mic-button {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin: 0 auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            font-size: 28px;
+            box-shadow: 0 4px 16px rgba(91, 106, 245, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
         }
 
         .mic-button:active {
             transform: scale(0.95);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(91, 106, 245, 0.3);
         }
 
         .mic-button.recording {
-            background: linear-gradient(135deg, #ff5e62, #ff9966);
             animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, var(--danger-color), #ff6b6b);
         }
 
         @keyframes pulse {
             0% {
-                box-shadow: 0 0 0 0 rgba(255, 94, 98, 0.5);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
             }
             70% {
-                box-shadow: 0 0 0 10px rgba(255, 94, 98, 0);
+                box-shadow: 0 0 0 20px rgba(220, 53, 69, 0);
             }
             100% {
-                box-shadow: 0 0 0 0 rgba(255, 94, 98, 0);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
             }
         }
 
-        .setup-screen, .join-screen, .create-screen {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .card {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: none;
-            border-radius: 10px;
-        }
-
-        .language-label {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-left: 0.5rem;
-        }
-
-        .session-info {
-            background-color: #e9ecef;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
+        .mic-label {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-light);
         }
 
-        .status-dot {
-            height: 10px;
-            width: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
+        /* Audio level indicators */
+        .audio-levels {
+            display: flex;
+            margin-top: 16px;
+            padding: 0 12px;
         }
 
-        .status-dot.connected {
-            background-color: #28a745;
+        .audio-level {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background-color: #e9ecef;
+            margin: 0 4px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .status-dot.disconnected {
-            background-color: #dc3545;
+        .audio-level-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 0%;
+            transition: width 0.2s ease-out;
+        }
+
+        .input-level-fill {
+            background-color: var(--primary-color);
+        }
+
+        .output-level-fill {
+            background-color: var(--secondary-color);
+        }
+
+        /* Share link */
+        .share-section {
+            margin-top: 20px;
+        }
+
+        .share-link-container {
+            display: flex;
+            margin-top: 8px;
         }
 
         .share-link {
-            font-size: 0.8rem;
-            word-break: break-all;
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            font-size: 0.9rem;
             background-color: #f8f9fa;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            margin-top: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-button {
+            padding: 12px;
+            border: none;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            cursor: pointer;
+        }
+
+        .copy-button:active {
+            opacity: 0.9;
+        }
+
+        /* Guidance text */
+        .guidance-text {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            display: flex;
+            border-top: 1px solid #e9ecef;
+            background-color: white;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .nav-item span {
+            font-size: 0.8rem;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 50px;
+            z-index: 1000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* Loading indicator */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(91, 106, 245, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 32px;
+        }
+
+        .loading-fact {
+            max-width: 300px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Layout adjustments for larger screens */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 600px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Initial Setup Screen -->
-    <div id="setup-screen" class="setup-screen container">
-        <div class="card p-4">
-            <h2 class="text-center mb-4">P2P Translation</h2>
-            <div class="d-grid gap-3">
-                <button id="create-button" class="btn btn-primary btn-lg">Create New Conversation</button>
-                <button id="join-button" class="btn btn-outline-primary btn-lg">Join Conversation</button>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="app-logo">
+                <i class="fas fa-comment-dots"></i>
+                <span>VoiceBridge</span>
+            </div>
+            <div class="app-subtitle">Real-time P2P Translation</div>
+        </header>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen active">
+            <h1 class="welcome-title">Break Language Barriers</h1>
+            <p class="welcome-subtitle">Speak in your language, hear in theirs</p>
+            
+            <!-- Illustration - replace with SVG in production -->
+            <div style="text-align: center; margin: 20px 0;">
+                <i class="fas fa-comments" style="font-size: 120px; color: var(--primary-color); opacity: 0.7;"></i>
+            </div>
+            
+            <div class="card">
+                <button id="create-button" class="btn">Create New Conversation</button>
+                <button id="join-button" class="btn btn-secondary">Join Conversation</button>
+            </div>
+            
+            <div class="guidance-text">
+                <p>Create a conversation or join an existing one with a code.</p>
             </div>
         </div>
-    </div>
 
-    <!-- Create Conversation Screen -->
-    <div id="create-screen" class="create-screen container" style="display: none;">
-        <div class="card p-4">
-            <h2 class="text-center mb-4">Create Conversation</h2>
-            <form id="create-form">
-                <div class="mb-3">
-                    <label for="your-language" class="form-label">Your Language</label>
-                    <select id="your-language" class="form-select" required>
-                        <!-- Will be populated dynamically -->
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="their-language" class="form-label">Their Language</label>
-                    <select id="their-language" class="form-select" required>
-                        <!-- Will be populated dynamically -->
-                    </select>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <button type="button" id="back-from-create" class="btn btn-outline-secondary">Back</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Join Conversation Screen -->
-    <div id="join-screen" class="join-screen container" style="display: none;">
-        <div class="card p-4">
-            <h2 class="text-center mb-4">Join Conversation</h2>
-            <form id="join-form">
-                <div class="mb-3">
-                    <label for="session-id" class="form-label">Conversation Code</label>
-                    <input type="text" id="session-id" class="form-control form-control-lg text-center" placeholder="Enter code" required>
-                </div>
-                <div class="mb-3">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="position" id="position-1" value="1" checked>
-                        <label class="form-check-label" for="position-1">Position 1</label>
+        <!-- Create Conversation Screen -->
+        <div id="create-screen" class="screen">
+            <div class="card">
+                <h2 class="card-title">Create Conversation</h2>
+                <form id="create-form">
+                    <div class="form-group">
+                        <label class="form-label" for="your-language">Your Language</label>
+                        <select id="your-language" class="form-select" required>
+                            <!-- Will be populated via JavaScript -->
+                        </select>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="position" id="position-2" value="2">
-                        <label class="form-check-label" for="position-2">Position 2</label>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="their-language">Their Language</label>
+                        <select id="their-language" class="form-select" required>
+                            <!-- Will be populated via JavaScript -->
+                        </select>
                     </div>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Join</button>
-                    <button type="button" id="back-from-join" class="btn btn-outline-secondary">Back</button>
-                </div>
-            </form>
+                    
+                    <button type="submit" class="btn">Create</button>
+                    <button type="button" id="back-from-create" class="btn btn-secondary">Back</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <!-- Main Translation Screen -->
-    <div id="translation-screen" style="display: none; height: 100%;">
-        <div class="header">
-            <h2>P2P Translation</h2>
+        <!-- Join Conversation Screen -->
+        <div id="join-screen" class="screen">
+            <div class="card">
+                <h2 class="card-title">Join Conversation</h2>
+                <form id="join-form">
+                    <div class="form-group">
+                        <label class="form-label" for="session-id">Conversation Code</label>
+                        <input type="text" id="session-id" class="form-input" placeholder="Enter code" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Join Conversation</button>
+                    <button type="button" id="back-from-join" class="btn btn-secondary">Back</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Conversation Screen -->
+        <div id="translation-screen" class="screen">
             <div class="session-info">
-                <span id="session-id-display"></span>
-                <div>
-                    <span class="status-dot disconnected" id="other-user-status"></span>
-                    <span id="other-user-status-text">Waiting for other user...</span>
+                <div class="session-id">
+                    Code: <span id="session-display">ABC123</span>
+                </div>
+                <div class="connection-status">
+                    <div class="status-dot disconnected" id="connection-dot"></div>
+                    <span id="connection-status">Waiting for partner...</span>
                 </div>
             </div>
-        </div>
-
-        <div class="container">
-            <div class="chat-box">
+            
+            <div class="language-labels">
+                <div class="language-label" id="your-language-label">English</div>
+                <div class="language-label" id="their-language-label">Spanish</div>
+            </div>
+            
+            <div class="chat-container">
                 <div class="chat-messages" id="chat-messages">
-                    <!-- Messages will appear here -->
+                    <!-- Messages will be added here via JavaScript -->
                 </div>
-                <div class="controls">
-                    <button id="mic-button" class="mic-button">
-                        <i class="bi bi-mic-fill"></i>
+            </div>
+            
+            <div class="audio-levels">
+                <div class="audio-level">
+                    <div class="audio-level-fill input-level-fill" id="input-level"></div>
+                </div>
+                <div class="audio-level">
+                    <div class="audio-level-fill output-level-fill" id="output-level"></div>
+                </div>
+            </div>
+            
+            <div class="mic-control">
+                <button id="mic-button" class="mic-button">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <div class="mic-label" id="mic-label">Hold to speak</div>
+            </div>
+            
+            <div class="share-section">
+                <p>Share this code with your conversation partner:</p>
+                <div class="share-link-container">
+                    <div class="share-link" id="share-link">ABC123</div>
+                    <button class="copy-button" id="copy-button">
+                        <i class="fas fa-copy"></i>
                     </button>
                 </div>
             </div>
-
-            <div class="share-link mt-3" id="share-link-container" style="display: none;">
-                <div class="mb-2"><strong>Share this link with your conversation partner:</strong></div>
-                <div id="share-link" class="text-center"></div>
-            </div>
+            
+            <button id="leave-room-btn" class="btn btn-danger mt-4">
+                <i class="fas fa-sign-out-alt"></i> Leave Conversation
+            </button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css"></script>
-    
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loading-text">Initializing...</div>
+        <div class="loading-fact" id="loading-fact"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
     <script>
-        // State variables
-        let socket;
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
-        let sessionId = null;
-        let userId = null;
-        let userPosition = null;
-        
         // DOM Elements
-        const setupScreen = document.getElementById('setup-screen');
+        const welcomeScreen = document.getElementById('welcome-screen');
         const createScreen = document.getElementById('create-screen');
         const joinScreen = document.getElementById('join-screen');
         const translationScreen = document.getElementById('translation-screen');
@@ -300,25 +745,53 @@
         const sessionIdInput = document.getElementById('session-id');
         
         const micButton = document.getElementById('mic-button');
+        const micLabel = document.getElementById('mic-label');
         const chatMessages = document.getElementById('chat-messages');
         
-        const sessionIdDisplay = document.getElementById('session-id-display');
-        const otherUserStatus = document.getElementById('other-user-status');
-        const otherUserStatusText = document.getElementById('other-user-status-text');
+        const sessionDisplay = document.getElementById('session-display');
+        const connectionDot = document.getElementById('connection-dot');
+        const connectionStatus = document.getElementById('connection-status');
         
-        const shareLinkContainer = document.getElementById('share-link-container');
-        const shareLinkElement = document.getElementById('share-link');
+        const yourLanguageLabel = document.getElementById('your-language-label');
+        const theirLanguageLabel = document.getElementById('their-language-label');
         
-        // Initialize
+        const shareLink = document.getElementById('share-link');
+        const copyButton = document.getElementById('copy-button');
+        
+        const inputLevel = document.getElementById('input-level');
+        const outputLevel = document.getElementById('output-level');
+        
+        const toast = document.getElementById('toast');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+        const loadingFact = document.getElementById('loading-fact');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        
+        // Session state
+        let sessionId = null;
+        let userId = null;
+        let userPosition = null;
+        let socket = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let yourLanguage = 'English';
+        let theirLanguage = 'Spanish';
+        
+        // Mock audio level for demo
+        let mockInputLevel = 0;
+        let mockOutputLevel = 0;
+        
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
-            // Load languages
+            // Fetch languages for dropdowns
             fetchLanguages();
             
             // Set up event listeners
             createButton.addEventListener('click', () => showScreen(createScreen));
             joinButton.addEventListener('click', () => showScreen(joinScreen));
-            backFromCreateButton.addEventListener('click', () => showScreen(setupScreen));
-            backFromJoinButton.addEventListener('click', () => showScreen(setupScreen));
+            backFromCreateButton.addEventListener('click', () => showScreen(welcomeScreen));
+            backFromJoinButton.addEventListener('click', () => showScreen(welcomeScreen));
             
             createForm.addEventListener('submit', handleCreateForm);
             joinForm.addEventListener('submit', handleJoinForm);
@@ -334,26 +807,145 @@
                 stopRecording();
             });
             
+            copyButton.addEventListener('click', copyShareCode);
+            leaveRoomBtn.addEventListener('click', leaveRoom);
+            
             // Initialize socket connection
             initSocket();
+            
+            // Mock audio levels for demo
+            setInterval(updateMockAudioLevels, 100);
+            
+            // Check URL for session info
+            checkUrlParameters();
+            
+            // Load interesting facts
+            loadRandomFacts();
         });
         
         // Helper Functions
         function showScreen(screen) {
-            setupScreen.style.display = 'none';
-            createScreen.style.display = 'none';
-            joinScreen.style.display = 'none';
-            translationScreen.style.display = 'none';
+            welcomeScreen.classList.remove('active');
+            createScreen.classList.remove('active');
+            joinScreen.classList.remove('active');
+            translationScreen.classList.remove('active');
             
-            screen.style.display = 'flex';
+            screen.classList.add('active');
+        }
+        
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        function showLoading(show = true, message = 'Initializing...') {
+            if (show) {
+                loadingText.textContent = message;
+                loadingOverlay.classList.add('show');
+                showRandomFact();
+            } else {
+                loadingOverlay.classList.remove('show');
+            }
+        }
+        
+        const interestingFacts = [
+            // Language facts
+            "The average person spends 2 years of their life on the phone.",
+            "There are over 7,000 languages spoken around the world today.",
+            "English has borrowed words from over 350 other languages.",
+            "A single conversation between two people contains about 1,000-2,000 words.",
+            "Japanese has different words for 'blue' and 'green-blue'.",
+            "Learning a second language can delay the onset of dementia by up to 4 years.",
+            "The most common word in English is 'the'.",
+            "The human brain processes speech at about 3 words per second.",
+            "Sign language has its own grammar, syntax, and regional accents.",
+            "Without speaking, humans can still express over 250,000 facial expressions.",
+            "The longest word in English is 'pneumonoultramicroscopicsilicovolcanoconiosis'.",
+            "The word 'hello' was only invented in the 19th century.",
+            "The Bible is the most translated book in the world.",
+            "The word 'alphabet' comes from the first two letters of the Greek alphabet: alpha and beta.",
+            
+            // Minecraft quotes
+            "Block by block, building something amazing...",
+            "The night is full of monsters, but the dawn brings new possibilities.",
+            "The journey of a thousand blocks begins with a single step.",
+            "The End is just the beginning.",
+            "Home is where your bed is."
+        ];
+        
+        function loadRandomFacts() {
+            // We've preloaded the facts array above
+            console.log("Facts loaded:", interestingFacts.length);
+        }
+        
+        function showRandomFact() {
+            const randomIndex = Math.floor(Math.random() * interestingFacts.length);
+            loadingFact.textContent = interestingFacts[randomIndex];
+        }
+        
+        function leaveRoom() {
+            if (socket && sessionId) {
+                // Tell the server we're leaving
+                socket.emit('leave', {
+                    session_id: sessionId,
+                    user_id: userId
+                });
+                
+                // Reset state
+                sessionId = null;
+                userId = null;
+                userPosition = null;
+                
+                // Clear chat messages
+                chatMessages.innerHTML = '';
+                
+                // Return to welcome screen
+                showScreen(welcomeScreen);
+                showToast('You left the conversation');
+            }
+        }
+        
+        function updateMockAudioLevels() {
+            if (isRecording) {
+                mockInputLevel = Math.min(100, mockInputLevel + Math.random() * 20);
+            } else {
+                mockInputLevel = Math.max(0, mockInputLevel - 5);
+            }
+            
+            // Randomly update output level
+            if (Math.random() > 0.7) {
+                mockOutputLevel = Math.min(100, mockOutputLevel + Math.random() * 30);
+            } else {
+                mockOutputLevel = Math.max(0, mockOutputLevel - 3);
+            }
+            
+            inputLevel.style.width = `${mockInputLevel}%`;
+            outputLevel.style.width = `${mockOutputLevel}%`;
         }
         
         async function fetchLanguages() {
             try {
-                const response = await fetch('/languages');
-                const languages = await response.json();
+                // In a real app, you'd fetch this from your server
+                const languages = {
+                    "en": "English",
+                    "es": "Spanish",
+                    "fr": "French",
+                    "de": "German",
+                    "it": "Italian",
+                    "pt": "Portuguese",
+                    "ru": "Russian",
+                    "zh": "Chinese",
+                    "ja": "Japanese",
+                    "ko": "Korean",
+                    "ar": "Arabic",
+                    "hi": "Hindi"
+                };
                 
-                // Populate language selects
+                // Populate dropdowns
                 for (const [code, name] of Object.entries(languages)) {
                     const option1 = document.createElement('option');
                     option1.value = code;
@@ -372,7 +964,114 @@
                 theirLanguageSelect.value = 'es';
             } catch (error) {
                 console.error('Error fetching languages:', error);
-                alert('Failed to load languages. Please refresh the page.');
+                showToast('Failed to load languages. Please refresh the page.');
+            }
+        }
+        
+        async function handleCreateForm(e) {
+            e.preventDefault();
+            
+            const userLang = yourLanguageSelect.value;
+            const theirLang = theirLanguageSelect.value;
+            
+            yourLanguage = yourLanguageSelect.options[yourLanguageSelect.selectedIndex].text;
+            theirLanguage = theirLanguageSelect.options[theirLanguageSelect.selectedIndex].text;
+            
+            showLoading(true);
+            
+            try {
+                showLoading(true, 'Creating conversation...');
+                
+                const response = await fetch('/create-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user1_lang: userLang,
+                        user2_lang: theirLang
+                    })
+                });
+                
+                showLoading(false);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionId = data.session_id;
+                    
+                    // Join as user 1
+                    joinSession(sessionId, 1);
+                } else {
+                    const error = await response.json();
+                    showToast(`Error: ${error.error || 'Failed to create session'}`);
+                }
+            } catch (error) {
+                showLoading(false);
+                console.error('Error creating session:', error);
+                showToast('Network error. Please check your connection.');
+            }
+        }
+        
+        async function handleJoinForm(e) {
+            e.preventDefault();
+            
+            const session = sessionIdInput.value.trim();
+            
+            if (!session) {
+                showToast('Please enter a conversation code');
+                return;
+            }
+            
+            showLoading(true, 'Joining conversation...');
+            joinSession(session);
+        }
+        
+        async function joinSession(session) {
+            try {
+                // Try to join session, let server decide the position
+                const response = await fetch(`/auto-join-session/${session}`);
+                
+                showLoading(false);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    sessionId = data.session_id;
+                    userId = data.user_id;
+                    userPosition = data.position;
+                    
+                    // Set language labels
+                    if (userPosition === 1) {
+                        yourLanguageLabel.textContent = data.your_language || yourLanguage;
+                        theirLanguageLabel.textContent = data.their_language || theirLanguage;
+                    } else {
+                        // For position 2, languages are reversed
+                        yourLanguageLabel.textContent = data.your_language || theirLanguage;
+                        theirLanguageLabel.textContent = data.their_language || yourLanguage;
+                    }
+                    
+                    // Show translation screen
+                    showScreen(translationScreen);
+                    
+                    // Update UI
+                    sessionDisplay.textContent = sessionId;
+                    shareLink.textContent = sessionId;
+                    
+                    // Connect to socket
+                    socket.emit('join', {
+                        session_id: sessionId,
+                        user_id: userId
+                    });
+                    
+                    showToast('Joined conversation successfully');
+                } else {
+                    const error = await response.json();
+                    showToast(`Error: ${error.error || 'Failed to join session'}`);
+                }
+            } catch (error) {
+                showLoading(false);
+                console.error('Error joining session:', error);
+                showToast('Network error. Please check your connection.');
             }
         }
         
@@ -387,23 +1086,28 @@
             
             socket.on('disconnect', () => {
                 console.log('Disconnected from server');
+                connectionDot.classList.remove('connected');
+                connectionDot.classList.add('disconnected');
+                connectionStatus.textContent = 'Disconnected from server';
             });
             
             socket.on('joined', (data) => {
                 console.log('Joined session:', data);
                 
                 if (data.other_user_connected) {
-                    otherUserStatus.classList.remove('disconnected');
-                    otherUserStatus.classList.add('connected');
-                    otherUserStatusText.textContent = 'Other user connected';
+                    connectionDot.classList.remove('disconnected');
+                    connectionDot.classList.add('connected');
+                    connectionStatus.textContent = 'Partner connected';
+                    showToast('Your conversation partner has joined');
                 }
             });
             
             socket.on('user_joined', (data) => {
                 console.log('Other user joined:', data);
-                otherUserStatus.classList.remove('disconnected');
-                otherUserStatus.classList.add('connected');
-                otherUserStatusText.textContent = 'Other user connected';
+                connectionDot.classList.remove('disconnected');
+                connectionDot.classList.add('connected');
+                connectionStatus.textContent = 'Partner connected';
+                showToast('Your conversation partner has joined');
             });
             
             socket.on('text_update', (data) => {
@@ -414,106 +1118,64 @@
             socket.on('audio_update', (data) => {
                 console.log('Audio update received');
                 playAudio(data.audio);
+                
+                // Simulate output level for incoming audio
+                mockOutputLevel = 90;
             });
             
             socket.on('error', (data) => {
                 console.error('Socket error:', data.message);
-                alert('Error: ' + data.message);
+                showToast(`Error: ${data.message}`);
+            });
+            
+            socket.on('user_left', (data) => {
+                console.log('User left:', data);
+                connectionDot.classList.remove('connected');
+                connectionDot.classList.add('disconnected');
+                connectionStatus.textContent = 'Partner disconnected';
+                showToast('Your conversation partner left');
             });
         }
         
-        async function handleCreateForm(e) {
-            e.preventDefault();
+        function updateChatMessages(data) {
+            // Current timestamp
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            const user1Lang = yourLanguageSelect.value;
-            const user2Lang = theirLanguageSelect.value;
-            
-            try {
-                const response = await fetch('/create-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user1_lang: user1Lang, user2_lang: user2Lang })
-                });
+            if (data.type === 'source') {
+                // Create message element
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message sent';
                 
-                const data = await response.json();
-                sessionId = data.session_id;
+                // Message content
+                messageEl.innerHTML = `
+                    <div>${data.text}</div>
+                    <div class="message-time">${time}</div>
+                `;
                 
-                // Join as user 1
-                joinSession(sessionId, 1);
-            } catch (error) {
-                console.error('Error creating session:', error);
-                alert('Failed to create session. Please try again.');
-            }
-        }
-        
-        async function handleJoinForm(e) {
-            e.preventDefault();
-            
-            const session = sessionIdInput.value.trim();
-            const position = document.querySelector('input[name="position"]:checked').value;
-            
-            if (!session) {
-                alert('Please enter a conversation code');
-                return;
+                // Add to chat
+                chatMessages.appendChild(messageEl);
+            } else if (data.type === 'translation') {
+                // Create message element
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message received';
+                
+                // Message content
+                messageEl.innerHTML = `
+                    <div>${data.text}</div>
+                    <div class="message-time">${time}</div>
+                `;
+                
+                // Add to chat
+                chatMessages.appendChild(messageEl);
             }
             
-            joinSession(session, parseInt(position));
-        }
-        
-        async function joinSession(session, position) {
-            try {
-                const response = await fetch(`/join-session/${session}/${position}`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    sessionId = data.session_id;
-                    userId = data.user_id;
-                    userPosition = data.position;
-                    
-                    // Show translation screen
-                    showScreen(translationScreen);
-                    
-                    // Update UI
-                    sessionIdDisplay.textContent = `Conversation Code: ${sessionId}`;
-                    
-                    // Show share link
-                    const shareUrl = `${window.location.origin}?session=${sessionId}&position=${userPosition === 1 ? 2 : 1}`;
-                    shareLinkElement.textContent = shareUrl;
-                    shareLinkContainer.style.display = 'block';
-                    
-                    // Join socket room
-                    socket.emit('join', { session_id: sessionId, user_id: userId });
-                    
-                    // Check URL params for auto-join
-                    checkUrlParams();
-                } else {
-                    alert(`Error: ${data.error}`);
-                }
-            } catch (error) {
-                console.error('Error joining session:', error);
-                alert('Failed to join session. Please try again.');
-            }
-        }
-        
-        function checkUrlParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const session = urlParams.get('session');
-            const position = urlParams.get('position');
-            
-            if (session && position) {
-                // Auto-fill join form
-                sessionIdInput.value = session;
-                document.getElementById(`position-${position}`).checked = true;
-                
-                // Show join screen if we're not already in a session
-                if (!sessionId) {
-                    showScreen(joinScreen);
-                }
-            }
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
         async function startRecording() {
-            if (isRecording || !sessionId || !userId) return;
+            if (isRecording || !socket || !socket.connected || !sessionId) return;
             
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -526,132 +1188,109 @@
                 });
                 
                 mediaRecorder.addEventListener('stop', () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    processAudioBlob(audioBlob);
+                    processAudioChunks();
                 });
                 
-                // Start recording
                 mediaRecorder.start();
                 isRecording = true;
                 
                 // Update UI
                 micButton.classList.add('recording');
+                micLabel.textContent = 'Release to stop';
             } catch (error) {
                 console.error('Error starting recording:', error);
-                alert('Failed to access microphone. Please ensure your browser has permission to use the microphone.');
+                showToast('Microphone access denied. Please check permissions.');
             }
         }
         
         function stopRecording() {
             if (!isRecording || !mediaRecorder) return;
             
-            // Stop recording
             mediaRecorder.stop();
             isRecording = false;
             
             // Update UI
             micButton.classList.remove('recording');
+            micLabel.textContent = 'Hold to speak';
         }
         
-        async function processAudioBlob(blob) {
+        async function processAudioChunks() {
+            if (audioChunks.length === 0) return;
+            
             try {
-                // Convert blob to float32 array
-                const arrayBuffer = await blob.arrayBuffer();
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                // Create blob from chunks
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
                 
-                audioContext.decodeAudioData(arrayBuffer, (buffer) => {
-                    // Convert to mono if needed
-                    const audio = buffer.getChannelData(0);
-                    
-                    // Convert to base64
-                    const audioB64 = arrayBufferToBase64(audio.buffer);
-                    
-                    // Send to server
-                    socket.emit('audio', {
-                        session_id: sessionId,
-                        user_id: userId,
-                        audio: audioB64
-                    });
-                }, (error) => {
-                    console.error('Error decoding audio:', error);
+                // Convert to Float32Array
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                const audioData = await decodeAudioData(arrayBuffer);
+                
+                // Convert to base64
+                const audio_b64 = arrayBufferToBase64(audioData.buffer);
+                
+                // Send to server
+                socket.emit('audio', {
+                    session_id: sessionId,
+                    user_id: userId,
+                    audio: audio_b64
                 });
             } catch (error) {
                 console.error('Error processing audio:', error);
+                showToast('Error processing audio');
             }
+        }
+        
+        async function decodeAudioData(arrayBuffer) {
+            // Create audio context
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Decode audio data
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            
+            // Get first channel data
+            const audioData = audioBuffer.getChannelData(0);
+            
+            // Resample to 16kHz if needed
+            if (audioBuffer.sampleRate !== 16000) {
+                return resampleAudio(audioData, audioBuffer.sampleRate, 16000);
+            }
+            
+            return audioData;
+        }
+        
+        function resampleAudio(audioData, originalSampleRate, targetSampleRate) {
+            const ratio = targetSampleRate / originalSampleRate;
+            const newLength = Math.floor(audioData.length * ratio);
+            const result = new Float32Array(newLength);
+            
+            for (let i = 0; i < newLength; i++) {
+                const index = Math.floor(i / ratio);
+                result[i] = audioData[index];
+            }
+            
+            return result;
         }
         
         function arrayBufferToBase64(buffer) {
-            let binary = '';
             const bytes = new Uint8Array(buffer);
-            const len = bytes.byteLength;
-            
-            for (let i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            
+            const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
             return window.btoa(binary);
         }
         
-        function updateChatMessages(data) {
-            if (data.type === 'source') {
-                // Update source text (my message)
-                const existingMessage = document.querySelector('.message.sent');
-                
-                if (existingMessage) {
-                    const sourceElement = existingMessage.querySelector('.source');
-                    sourceElement.textContent = data.text;
-                } else {
-                    // Create new message
-                    const messageElement = document.createElement('div');
-                    messageElement.className = 'message sent';
-                    
-                    const sourceElement = document.createElement('div');
-                    sourceElement.className = 'source';
-                    sourceElement.textContent = data.text;
-                    
-                    messageElement.appendChild(sourceElement);
-                    chatMessages.appendChild(messageElement);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            } else if (data.type === 'translation') {
-                // Update translation text (their message)
-                const existingMessage = document.querySelector('.message.received');
-                
-                if (existingMessage) {
-                    const translationElement = existingMessage.querySelector('.translation');
-                    translationElement.textContent = data.text;
-                } else {
-                    // Create new message
-                    const messageElement = document.createElement('div');
-                    messageElement.className = 'message received';
-                    
-                    const translationElement = document.createElement('div');
-                    translationElement.className = 'translation';
-                    translationElement.textContent = data.text;
-                    
-                    messageElement.appendChild(translationElement);
-                    chatMessages.appendChild(messageElement);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            }
-        }
-        
-        function playAudio(audioB64) {
-            if (!audioB64) return;
+        function playAudio(audio_b64) {
+            if (!audio_b64) return;
             
             try {
-                // Decode base64 audio
-                const binaryString = window.atob(audioB64);
+                // Decode base64
+                const binaryString = window.atob(audio_b64);
                 const bytes = new Uint8Array(binaryString.length);
                 
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
                 
-                // Create audio context
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
                 // Convert to audio buffer
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const audioBuffer = new Int16Array(bytes.buffer);
                 const floatBuffer = new Float32Array(audioBuffer.length);
                 
@@ -671,6 +1310,28 @@
                 source.start();
             } catch (error) {
                 console.error('Error playing audio:', error);
+                showToast('Error playing audio');
+            }
+        }
+        
+        function copyShareCode() {
+            navigator.clipboard.writeText(sessionId)
+                .then(() => {
+                    showToast('Conversation code copied to clipboard');
+                })
+                .catch(err => {
+                    console.error('Error copying text: ', err);
+                    showToast('Failed to copy code');
+                });
+        }
+        
+        function checkUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const session = urlParams.get('session');
+            
+            if (session) {
+                sessionIdInput.value = session;
+                showScreen(joinScreen);
             }
         }
     </script>
