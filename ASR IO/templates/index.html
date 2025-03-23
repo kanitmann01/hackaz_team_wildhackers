@@ -153,6 +153,11 @@
             color: var(--text-color);
         }
 
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
         /* Forms */
         .form-group {
             margin-bottom: 16px;
@@ -200,48 +205,6 @@
             display: block;
         }
 
-        /* Radio buttons */
-        .radio-group {
-            display: flex;
-            margin-bottom: 16px;
-        }
-
-        .radio-option {
-            flex: 1;
-            position: relative;
-        }
-
-        .radio-option input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .radio-option label {
-            display: block;
-            padding: 12px;
-            text-align: center;
-            background-color: #e9ecef;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .radio-option:first-child label {
-            border-top-left-radius: var(--border-radius);
-            border-bottom-left-radius: var(--border-radius);
-        }
-
-        .radio-option:last-child label {
-            border-top-right-radius: var(--border-radius);
-            border-bottom-right-radius: var(--border-radius);
-        }
-
-        .radio-option input:checked + label {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
         /* Chat Screen */
         .session-info {
             display: flex;
@@ -275,6 +238,33 @@
         }
 
         .status-dot.disconnected {
+            background-color: var(--danger-color);
+        }
+
+        .connection-quality {
+            display: flex;
+            margin-left: 10px;
+            align-items: flex-end;
+            height: 15px;
+        }
+
+        .connection-quality .bar {
+            width: 3px;
+            margin: 0 1px;
+            background-color: #e1e1e1;
+            border-radius: 1px;
+        }
+
+        .connection-quality .bar1 { height: 25%; }
+        .connection-quality .bar2 { height: 50%; }
+        .connection-quality .bar3 { height: 75%; }
+        .connection-quality .bar4 { height: 100%; }
+
+        .connection-quality .bar.active {
+            background-color: var(--success-color);
+        }
+
+        .connection-quality.poor .bar.active {
             background-color: var(--danger-color);
         }
 
@@ -339,6 +329,92 @@
             margin-top: 4px;
         }
 
+        .continuation-message {
+            text-align: center;
+            padding: 8px;
+            margin: 12px 0;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Quick Phrases */
+        .quick-phrases {
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .quick-phrase-header {
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+
+        .quick-phrase-scroll {
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .quick-phrase-btn {
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .quick-phrase-btn:hover {
+            background-color: #e1e1e1;
+        }
+
+        /* Voice Visualization */
+        .voice-waves {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 50px;
+            margin-bottom: 20px;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            animation: wave-animation 1s infinite ease-in-out;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0.0s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave-animation {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
         /* Microphone control */
         .mic-control {
             display: flex;
@@ -396,6 +472,29 @@
             text-align: center;
             font-size: 0.85rem;
             color: var(--text-light);
+        }
+
+        /* Text Input */
+        .text-fallback {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            margin-top: 8px;
+        }
+
+        .input-group .form-input {
+            flex-grow: 1;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            border-right: none;
+        }
+
+        .input-group .btn {
+            margin-bottom: 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            width: auto;
         }
 
         /* Audio level indicators */
@@ -475,36 +574,6 @@
             color: var(--text-light);
         }
 
-        /* Bottom nav */
-        .bottom-nav {
-            display: flex;
-            border-top: 1px solid #e9ecef;
-            background-color: white;
-        }
-
-        .nav-item {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .nav-item.active {
-            color: var(--primary-color);
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .nav-item span {
-            font-size: 0.8rem;
-        }
-
         /* Toast notification */
         .toast {
             position: fixed;
@@ -526,7 +595,7 @@
             opacity: 1;
         }
 
-        /* Loading indicator */
+        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -578,6 +647,76 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Tutorial */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tutorial-content {
+            position: relative;
+            max-width: 320px;
+            width: 90%;
+        }
+
+        .tutorial-step {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .tutorial-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .tutorial-header h3 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .tutorial-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .tutorial-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .tutorial-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .tutorial-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #e1e1e1;
+        }
+
+        .tutorial-dot.active {
+            background-color: var(--primary-color);
         }
 
         /* Layout adjustments for larger screens */
@@ -668,6 +807,12 @@
                 <div class="connection-status">
                     <div class="status-dot disconnected" id="connection-dot"></div>
                     <span id="connection-status">Waiting for partner...</span>
+                    <div class="connection-quality" id="connection-quality">
+                        <div class="bar bar1"></div>
+                        <div class="bar bar2"></div>
+                        <div class="bar bar3"></div>
+                        <div class="bar bar4"></div>
+                    </div>
                 </div>
             </div>
             
@@ -691,11 +836,49 @@
                 </div>
             </div>
             
+            <div class="quick-phrases mt-3 mb-3">
+                <div class="quick-phrase-header">
+                    <i class="fas fa-bolt"></i> Quick Phrases
+                    <button id="toggle-phrases" class="toggle-btn">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div id="quick-phrase-container" style="display: none;">
+                    <div class="quick-phrase-scroll">
+                        <button class="quick-phrase-btn">Hello, nice to meet you</button>
+                        <button class="quick-phrase-btn">Could you speak slower please?</button>
+                        <button class="quick-phrase-btn">I don't understand</button>
+                        <button class="quick-phrase-btn">Thank you very much</button>
+                        <button class="quick-phrase-btn">Where is the bathroom?</button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="mic-control">
+                <div class="voice-waves" id="voice-waves" style="display: none;">
+                    <div class="wave-bar" style="height: 15px;"></div>
+                    <div class="wave-bar" style="height: 25px;"></div>
+                    <div class="wave-bar" style="height: 35px;"></div>
+                    <div class="wave-bar" style="height: 25px;"></div>
+                    <div class="wave-bar" style="height: 15px;"></div>
+                </div>
                 <button id="mic-button" class="mic-button">
                     <i class="fas fa-microphone"></i>
                 </button>
                 <div class="mic-label" id="mic-label">Hold to speak</div>
+            </div>
+            
+            <div class="text-fallback mt-3">
+                <button id="toggle-input-mode" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-keyboard"></i> Switch to Text Input
+                </button>
+                
+                <div id="text-input-container" style="display: none;" class="mt-3">
+                    <div class="input-group">
+                        <input type="text" id="text-input" class="form-input" placeholder="Type your message...">
+                        <button id="send-text-btn" class="btn">Send</button>
+                    </div>
+                </div>
             </div>
             
             <div class="share-section">
@@ -724,6 +907,26 @@
         <div class="loading-fact" id="loading-fact"></div>
     </div>
 
+    <!-- Tutorial overlay -->
+    <div class="tutorial-overlay" id="tutorial-overlay" style="display: none;">
+        <div class="tutorial-content">
+            <div class="tutorial-step" id="tutorial-step">
+                <div class="tutorial-header">
+                    <h3 id="tutorial-title">Title</h3>
+                    <button id="tutorial-close" class="tutorial-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="tutorial-text">Content goes here</div>
+                <div class="tutorial-nav">
+                    <button id="tutorial-prev" class="btn btn-sm btn-secondary">Previous</button>
+                    <div id="tutorial-dots" class="tutorial-dots"></div>
+                    <button id="tutorial-next" class="btn btn-sm">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
     <script>
         // DOM Elements
@@ -747,16 +950,20 @@
         const micButton = document.getElementById('mic-button');
         const micLabel = document.getElementById('mic-label');
         const chatMessages = document.getElementById('chat-messages');
+        const voiceWaves = document.getElementById('voice-waves');
         
         const sessionDisplay = document.getElementById('session-display');
         const connectionDot = document.getElementById('connection-dot');
         const connectionStatus = document.getElementById('connection-status');
+        const connectionQuality = document.getElementById('connection-quality');
+        const qualityBars = connectionQuality.querySelectorAll('.bar');
         
         const yourLanguageLabel = document.getElementById('your-language-label');
         const theirLanguageLabel = document.getElementById('their-language-label');
         
         const shareLink = document.getElementById('share-link');
         const copyButton = document.getElementById('copy-button');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
         
         const inputLevel = document.getElementById('input-level');
         const outputLevel = document.getElementById('output-level');
@@ -765,7 +972,26 @@
         const loadingOverlay = document.getElementById('loading-overlay');
         const loadingText = document.getElementById('loading-text');
         const loadingFact = document.getElementById('loading-fact');
-        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        
+        // Quick phrases
+        const togglePhrasesBtn = document.getElementById('toggle-phrases');
+        const quickPhraseContainer = document.getElementById('quick-phrase-container');
+        const quickPhraseBtns = document.querySelectorAll('.quick-phrase-btn');
+        
+        // Text input
+        const toggleInputBtn = document.getElementById('toggle-input-mode');
+        const textInputContainer = document.getElementById('text-input-container');
+        const textInput = document.getElementById('text-input');
+        const sendTextBtn = document.getElementById('send-text-btn');
+        
+        // Tutorial elements
+        const tutorialOverlay = document.getElementById('tutorial-overlay');
+        const tutorialTitle = document.getElementById('tutorial-title');
+        const tutorialText = document.getElementById('tutorial-text');
+        const tutorialClose = document.getElementById('tutorial-close');
+        const tutorialPrev = document.getElementById('tutorial-prev');
+        const tutorialNext = document.getElementById('tutorial-next');
+        const tutorialDots = document.getElementById('tutorial-dots');
         
         // Session state
         let sessionId = null;
@@ -777,6 +1003,7 @@
         let audioChunks = [];
         let yourLanguage = 'English';
         let theirLanguage = 'Spanish';
+        let pingInterval;
         
         // Mock audio level for demo
         let mockInputLevel = 0;
@@ -810,6 +1037,48 @@
             copyButton.addEventListener('click', copyShareCode);
             leaveRoomBtn.addEventListener('click', leaveRoom);
             
+            // Quick phrases toggle
+            togglePhrasesBtn.addEventListener('click', () => {
+                if (quickPhraseContainer.style.display === 'none') {
+                    quickPhraseContainer.style.display = 'block';
+                    togglePhrasesBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                } else {
+                    quickPhraseContainer.style.display = 'none';
+                    togglePhrasesBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                }
+            });
+            
+            // Set up event listeners for all quick phrase buttons
+            quickPhraseBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Use the text input sending mechanism
+                    if (sessionId) {
+                        socket.emit('text', {
+                            session_id: sessionId,
+                            user_id: userId,
+                            text: btn.textContent
+                        });
+                        showToast('Quick phrase sent');
+                    }
+                });
+            });
+            
+            // Text input toggle
+            toggleInputBtn.addEventListener('click', () => {
+                if (textInputContainer.style.display === 'none') {
+                    textInputContainer.style.display = 'block';
+                    toggleInputBtn.innerHTML = '<i class="fas fa-microphone"></i> Switch to Voice';
+                } else {
+                    textInputContainer.style.display = 'none';
+                    toggleInputBtn.innerHTML = '<i class="fas fa-keyboard"></i> Switch to Text Input';
+                }
+            });
+            
+            sendTextBtn.addEventListener('click', sendTextMessage);
+            textInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendTextMessage();
+            });
+            
             // Initialize socket connection
             initSocket();
             
@@ -821,6 +1090,9 @@
             
             // Load interesting facts
             loadRandomFacts();
+            
+            // Save conversation periodically
+            setInterval(saveConversation, 30000); // Every 30 seconds
         });
         
         // Helper Functions
@@ -831,6 +1103,11 @@
             translationScreen.classList.remove('active');
             
             screen.classList.add('active');
+            
+            // Check for tutorial when showing translation screen
+            if (screen === translationScreen) {
+                checkTutorial();
+            }
         }
         
         function showToast(message, duration = 3000) {
@@ -864,14 +1141,27 @@
             "The human brain processes speech at about 3 words per second.",
             "Sign language has its own grammar, syntax, and regional accents.",
             "Without speaking, humans can still express over 250,000 facial expressions.",
-            "The longest word in English is 'pneumonoultramicroscopicsilicovolcanoconiosis'.",
-            "The word 'hello' was only invented in the 19th century.",
-            "The Bible is the most translated book in the world.",
-            "The word 'alphabet' comes from the first two letters of the Greek alphabet: alpha and beta.",
+            
+            // Mario quotes
+            "It's-a me, Mario!",
+            "Let's-a go!",
+            "Mamma mia!",
+            "Wahoo!",
+            "Here we go!",
+            "Thank you so much for playing my game!",
+            "Yahoo!",
+            "Okey-dokey!",
+            "Oh yeah! Mario time!",
+            "Just what I needed!",
             
             // Minecraft quotes
             "Block by block, building something amazing...",
+            "Don't dig straight down!",
+            "Creeper? Aww man...",
+            "One more block, one more hour of gameplay.",
+            "Diamonds are a player's best friend.",
             "The night is full of monsters, but the dawn brings new possibilities.",
+            "Everything is better with friends - even fighting Endermen.",
             "The journey of a thousand blocks begins with a single step.",
             "The End is just the beginning.",
             "Home is where your bed is."
@@ -885,28 +1175,6 @@
         function showRandomFact() {
             const randomIndex = Math.floor(Math.random() * interestingFacts.length);
             loadingFact.textContent = interestingFacts[randomIndex];
-        }
-        
-        function leaveRoom() {
-            if (socket && sessionId) {
-                // Tell the server we're leaving
-                socket.emit('leave', {
-                    session_id: sessionId,
-                    user_id: userId
-                });
-                
-                // Reset state
-                sessionId = null;
-                userId = null;
-                userPosition = null;
-                
-                // Clear chat messages
-                chatMessages.innerHTML = '';
-                
-                // Return to welcome screen
-                showScreen(welcomeScreen);
-                showToast('You left the conversation');
-            }
         }
         
         function updateMockAudioLevels() {
@@ -977,8 +1245,6 @@
             yourLanguage = yourLanguageSelect.options[yourLanguageSelect.selectedIndex].text;
             theirLanguage = theirLanguageSelect.options[theirLanguageSelect.selectedIndex].text;
             
-            showLoading(true);
-            
             try {
                 showLoading(true, 'Creating conversation...');
                 
@@ -1000,7 +1266,7 @@
                     sessionId = data.session_id;
                     
                     // Join as user 1
-                    joinSession(sessionId, 1);
+                    joinSession(sessionId);
                 } else {
                     const error = await response.json();
                     showToast(`Error: ${error.error || 'Failed to create session'}`);
@@ -1063,6 +1329,12 @@
                         user_id: userId
                     });
                     
+                    // Start ping monitoring
+                    startPingMonitoring();
+                    
+                    // Load previous conversation
+                    loadConversation();
+                    
                     showToast('Joined conversation successfully');
                 } else {
                     const error = await response.json();
@@ -1072,6 +1344,31 @@
                 showLoading(false);
                 console.error('Error joining session:', error);
                 showToast('Network error. Please check your connection.');
+            }
+        }
+        
+        function leaveRoom() {
+            if (socket && sessionId) {
+                // Tell the server we're leaving
+                socket.emit('leave', {
+                    session_id: sessionId,
+                    user_id: userId
+                });
+                
+                // Reset state
+                sessionId = null;
+                userId = null;
+                userPosition = null;
+                
+                // Clear chat messages
+                chatMessages.innerHTML = '';
+                
+                // Clear ping interval
+                clearInterval(pingInterval);
+                
+                // Return to welcome screen
+                showScreen(welcomeScreen);
+                showToast('You left the conversation');
             }
         }
         
@@ -1089,6 +1386,7 @@
                 connectionDot.classList.remove('connected');
                 connectionDot.classList.add('disconnected');
                 connectionStatus.textContent = 'Disconnected from server';
+                updateConnectionQuality(0);
             });
             
             socket.on('joined', (data) => {
@@ -1123,11 +1421,6 @@
                 mockOutputLevel = 90;
             });
             
-            socket.on('error', (data) => {
-                console.error('Socket error:', data.message);
-                showToast(`Error: ${data.message}`);
-            });
-            
             socket.on('user_left', (data) => {
                 console.log('User left:', data);
                 connectionDot.classList.remove('connected');
@@ -1135,49 +1428,114 @@
                 connectionStatus.textContent = 'Partner disconnected';
                 showToast('Your conversation partner left');
             });
+            
+            socket.on('error', (data) => {
+                console.error('Socket error:', data.message);
+                showToast(`Error: ${data.message}`);
+            });
+            
+            socket.on('pong', () => {
+                // Used for connection quality monitoring
+            });
         }
         
-        function updateChatMessages(data) {
-            // Current timestamp
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        function startPingMonitoring() {
+            let pingTimes = [];
             
-            if (data.type === 'source') {
-                // Create message element
-                const messageEl = document.createElement('div');
-                messageEl.className = 'message sent';
+            pingInterval = setInterval(() => {
+                if (!socket || !socket.connected) {
+                    updateConnectionQuality(0);
+                    return;
+                }
                 
-                // Message content
-                messageEl.innerHTML = `
-                    <div>${data.text}</div>
-                    <div class="message-time">${time}</div>
-                `;
-                
-                // Add to chat
-                chatMessages.appendChild(messageEl);
-            } else if (data.type === 'translation') {
-                // Create message element
-                const messageEl = document.createElement('div');
-                messageEl.className = 'message received';
-                
-                // Message content
-                messageEl.innerHTML = `
-                    <div>${data.text}</div>
-                    <div class="message-time">${time}</div>
-                `;
-                
-                // Add to chat
-                chatMessages.appendChild(messageEl);
+                const start = Date.now();
+                socket.emit('ping', {}, () => {
+                    const latency = Date.now() - start;
+                    pingTimes.push(latency);
+                    
+                    // Keep only the last 3 ping times
+                    if (pingTimes.length > 3) {
+                        pingTimes.shift();
+                    }
+                    
+                    // Calculate average latency
+                    const avgLatency = pingTimes.reduce((sum, time) => sum + time, 0) / pingTimes.length;
+                    
+                    // Set quality based on latency
+                    let quality;
+                    if (avgLatency < 100) quality = 4;
+                    else if (avgLatency < 200) quality = 3;
+                    else if (avgLatency < 400) quality = 2;
+                    else quality = 1;
+                    
+                    updateConnectionQuality(quality);
+                });
+            }, 5000);
+        }
+        
+        function updateConnectionQuality(quality) {
+            // quality should be a number from 0-4
+            // 0 = disconnected, 4 = excellent
+            
+            // Reset all bars
+            qualityBars.forEach(bar => bar.classList.remove('active'));
+            
+            // Set poor class if quality is low
+            if (quality <= 1) {
+                connectionQuality.classList.add('poor');
+            } else {
+                connectionQuality.classList.remove('poor');
             }
             
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Activate the appropriate number of bars
+            for (let i = 0; i < quality; i++) {
+                if (i < qualityBars.length) {
+                    qualityBars[i].classList.add('active');
+                }
+            }
         }
         
-        async function startRecording() {
-            if (isRecording || !socket || !socket.connected || !sessionId) return;
+        // Replace your current updateChatMessages function with this:
+function updateChatMessages(data) {
+    // Current timestamp
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    if (data.type === 'source') {
+        // For source messages (your messages), create a NEW element each time
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message sent';
+        
+        // Message content
+        messageEl.innerHTML = `
+            <div>${data.text}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        // Add to chat
+        chatMessages.appendChild(messageEl);
+    } else if (data.type === 'translation') {
+        // For translations (their messages), create a NEW element each time
+        const messageEl = document.createElement('div');
+        messageEl.className = 'message received';
+        
+        // Message content
+        messageEl.innerHTML = `
+            <div>${data.text}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        // Add to chat
+        chatMessages.appendChild(messageEl);
+    }
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+            async function startRecording() {
+                if (isRecording || !socket || !socket.connected || !sessionId) return;
             
-            try {
+             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
                 mediaRecorder = new MediaRecorder(stream);
@@ -1197,6 +1555,7 @@
                 // Update UI
                 micButton.classList.add('recording');
                 micLabel.textContent = 'Release to stop';
+                voiceWaves.style.display = 'flex'; // Show voice waves
             } catch (error) {
                 console.error('Error starting recording:', error);
                 showToast('Microphone access denied. Please check permissions.');
@@ -1212,6 +1571,7 @@
             // Update UI
             micButton.classList.remove('recording');
             micLabel.textContent = 'Hold to speak';
+            voiceWaves.style.display = 'none'; // Hide voice waves
         }
         
         async function processAudioChunks() {
@@ -1238,6 +1598,20 @@
                 console.error('Error processing audio:', error);
                 showToast('Error processing audio');
             }
+        }
+        
+        function sendTextMessage() {
+            if (!textInput.value.trim() || !sessionId) return;
+            
+            // Send text to server
+            socket.emit('text', {
+                session_id: sessionId,
+                user_id: userId,
+                text: textInput.value.trim()
+            });
+            
+            // Clear input
+            textInput.value = '';
         }
         
         async function decodeAudioData(arrayBuffer) {
@@ -1332,6 +1706,173 @@
             if (session) {
                 sessionIdInput.value = session;
                 showScreen(joinScreen);
+            }
+        }
+        
+        // Conversation persistence
+        function saveConversation() {
+            if (!sessionId) return;
+            
+            // Get all message elements
+            const messages = chatMessages.querySelectorAll('.message');
+            
+            // Create an array of message objects
+            const conversationData = Array.from(messages).map(msg => {
+                return {
+                    type: msg.classList.contains('sent') ? 'sent' : 'received',
+                    text: msg.querySelector('div:first-child').textContent,
+                    time: msg.querySelector('.message-time').textContent
+                };
+            });
+            
+            // Save conversation data with sessionId as key
+            localStorage.setItem(`conversation_${sessionId}`, JSON.stringify({
+                messages: conversationData,
+                timestamp: new Date().toISOString(),
+                yourLanguage: yourLanguageLabel.textContent,
+                theirLanguage: theirLanguageLabel.textContent
+            }));
+        }
+        
+        // Load previous conversation when joining
+        function loadConversation() {
+            if (!sessionId) return;
+            
+            // Check if there's a saved conversation
+            const savedData = localStorage.getItem(`conversation_${sessionId}`);
+            if (!savedData) return;
+            
+            try {
+                const conversation = JSON.parse(savedData);
+                
+                // Add a timestamp indicator
+                const timestamp = new Date(conversation.timestamp);
+                const formattedDate = timestamp.toLocaleDateString();
+                const formattedTime = timestamp.toLocaleTimeString();
+                
+                // Add a continuation message
+                const continuationEl = document.createElement('div');
+                continuationEl.className = 'continuation-message';
+                continuationEl.textContent = `Continuing conversation from ${formattedDate} ${formattedTime}`;
+                chatMessages.appendChild(continuationEl);
+                
+                // Restore messages
+                conversation.messages.forEach(msg => {
+                    const messageEl = document.createElement('div');
+                    messageEl.className = `message ${msg.type}`;
+                    messageEl.innerHTML = `
+                        <div>${msg.text}</div>
+                        <div class="message-time">${msg.time}</div>
+                    `;
+                    chatMessages.appendChild(messageEl);
+                });
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                showToast('Previous conversation loaded');
+            } catch (error) {
+                console.error('Error loading conversation:', error);
+            }
+        }
+        
+        // Tutorial functionality
+        function showTutorial() {
+            // Tutorial steps
+            const steps = [
+                {
+                    element: '#mic-button',
+                    title: 'Hold to Speak',
+                    content: 'Press and hold this button while you speak, then release when done.'
+                },
+                {
+                    element: '.chat-messages',
+                    title: 'Conversation Area',
+                    content: 'Your messages appear on the right, translations on the left.'
+                },
+                {
+                    element: '#share-link',
+                    title: 'Share Code',
+                    content: 'Share this code with your conversation partner to connect.'
+                },
+                {
+                    element: '#toggle-input-mode',
+                    title: 'Text Input',
+                    content: 'If speaking isn\'t an option, you can switch to typing.'
+                },
+                {
+                    element: '.quick-phrases',
+                    title: 'Quick Phrases',
+                    content: 'Use these common phrases for fast communication.'
+                }
+            ];
+            
+            let currentStep = 0;
+            
+            // Create dots
+            tutorialDots.innerHTML = '';
+            steps.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'tutorial-dot' + (index === 0 ? ' active' : '');
+                tutorialDots.appendChild(dot);
+            });
+            
+            // Show first step
+            showStep(0);
+            
+            // Show overlay
+            tutorialOverlay.style.display = 'flex';
+            
+            // Event listeners
+            tutorialClose.addEventListener('click', () => {
+                tutorialOverlay.style.display = 'none';
+                localStorage.setItem('tutorial-shown', 'true');
+            });
+            
+            tutorialPrev.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    showStep(currentStep - 1);
+                }
+            });
+            
+            tutorialNext.addEventListener('click', () => {
+                if (currentStep < steps.length - 1) {
+                    showStep(currentStep + 1);
+                } else {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('tutorial-shown', 'true');
+                }
+            });
+            
+            function showStep(stepIndex) {
+                currentStep = stepIndex;
+                const step = steps[stepIndex];
+                
+                // Update content
+                tutorialTitle.textContent = step.title;
+                tutorialText.textContent = step.content;
+                
+                // Update buttons
+                tutorialPrev.style.visibility = stepIndex === 0 ? 'hidden' : 'visible';
+                tutorialNext.textContent = stepIndex === steps.length - 1 ? 'Finish' : 'Next';
+                
+                // Update dots
+                const dots = tutorialDots.querySelectorAll('.tutorial-dot');
+                dots.forEach((dot, i) => {
+                    dot.className = 'tutorial-dot' + (i === stepIndex ? ' active' : '');
+                });
+            }
+        }
+        
+        // Check if user has seen the tutorial
+        function checkTutorial() {
+            // Only show tutorial in translation screen
+            if (translationScreen.classList.contains('active')) {
+                const tutorialShown = localStorage.getItem('tutorial-shown');
+                if (!tutorialShown) {
+                    // Wait a moment to let the screen render
+                    setTimeout(showTutorial, 1000);
+                }
             }
         }
     </script>
