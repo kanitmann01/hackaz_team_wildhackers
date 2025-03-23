@@ -31,7 +31,7 @@ session_lock = threading.Lock()
 class TranslationSession:
     """Session for P2P translation between two users."""
     
-    def __init__(self, session_id, user1_lang='en', user2_lang='es'):
+    def __init__(self, session_id, user1_lang='hi', user2_lang='en'):
         """Initialize a new translation session."""
         self.session_id = session_id
         self.user1_id = None
@@ -243,8 +243,8 @@ def create_session():
     """Create a new translation session."""
     try:
         data = request.json
-        user1_lang = data.get('user1_lang', 'en')
-        user2_lang = data.get('user2_lang', 'es')
+        user1_lang = data.get('user1_lang', 'hi')
+        user2_lang = data.get('user2_lang', 'en')
         
         # Generate session ID
         session_id = str(uuid.uuid4())[:8]
