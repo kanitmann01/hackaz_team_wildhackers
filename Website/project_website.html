@@ -16,16 +16,16 @@
     <!-- Custom styling -->
     <style>
         :root {
-            --primary: #FF304F;
-            /* Vibrant UofA Red */
-            --secondary: #0C234B;
-            /* UofA Blue */
-            --accent: #FFD23F;
-            /* Brighter UofA Gold */
-            --light-bg: #FFF8E7;
-            /* Warm light background */
-            --dark-bg: #0A1A2F;
-            /* Richer dark blue background */
+            --primary: #36BFFA;
+            /* Updated to teal from logo */
+            --secondary: #0A1A2F;
+            /* Darker blue */
+            --accent: #9E8CFF;
+            /* Purple accent from logo */
+            --light-bg: #F0F9FF;
+            /* Light teal background */
+            --dark-bg: #0F172A;
+            /* Darker background */
         }
 
         body {
@@ -40,7 +40,7 @@
         }
 
         .bg-dark-custom {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #163A66 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1E293B 100%);
         }
 
         .text-primary-custom {
@@ -52,16 +52,16 @@
         }
 
         .btn-primary-custom {
-            background: linear-gradient(to right, var(--primary), #FF5B66);
+            background: linear-gradient(to right, var(--primary), var(--accent));
             border: none;
             color: white;
-            box-shadow: 0 4px 15px rgba(233, 34, 49, 0.25);
+            box-shadow: 0 4px 15px rgba(54, 191, 250, 0.25);
             transition: all 0.3s ease;
         }
 
         .btn-primary-custom:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 34, 49, 0.35);
+            box-shadow: 0 6px 20px rgba(54, 191, 250, 0.35);
             color: white;
         }
 
@@ -86,44 +86,18 @@
         }
 
         .logo {
-            position: relative;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             margin-right: 12px;
-        }
-
-        .logo-inner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary), #FF5B66);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-            box-shadow: 0 4px 10px rgba(233, 34, 49, 0.3);
-            z-index: 2;
-        }
-
-        .logo-outer {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            background: var(--secondary);
-            z-index: 1;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .brand-text {
             font-weight: 800;
             font-size: 24px;
-            background: linear-gradient(to right, var(--primary), #FF5B66);
+            background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-left: 5px;
@@ -166,7 +140,7 @@
             z-index: 0;
         }
 
-        .uofa-colors-bar {
+        .colors-bar {
             height: 6px;
             background: linear-gradient(to right, var(--primary) 33%, var(--accent) 33%, var(--accent) 66%, var(--secondary) 66%);
             width: 100%;
@@ -177,14 +151,14 @@
             position: relative;
             z-index: 1;
             padding: 5rem 2rem;
-            background: linear-gradient(120deg, var(--light-bg) 0%, #FFF1D0 100%);
+            background: linear-gradient(120deg, var(--light-bg) 0%, #E0F2FE 100%);
         }
 
         .hero-right {
             position: relative;
             overflow: hidden;
             padding: 3rem;
-            background: linear-gradient(135deg, #0A1A2F 0%, #184080 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1E3A8A 100%);
         }
 
         .hero-left::before {
@@ -192,7 +166,7 @@
             position: absolute;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(233, 34, 49, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            background: radial-gradient(circle, rgba(54, 191, 250, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
             top: -100px;
             left: -100px;
             z-index: -1;
@@ -215,7 +189,7 @@
             position: absolute;
             height: 8px;
             width: 100%;
-            background-color: rgba(233, 34, 49, 0.2);
+            background-color: rgba(54, 191, 250, 0.2);
             bottom: 6px;
             left: 0;
             z-index: -1;
@@ -277,23 +251,23 @@
         }
 
         .bar-1 {
-            background: linear-gradient(to right, #64B6AC, #73C6BC);
+            background: linear-gradient(to right, #36BFFA, #0EA5E9);
         }
 
         .bar-2 {
-            background: linear-gradient(to right, #5E81AC, #6E91BC);
+            background: linear-gradient(to right, #38BDF8, #0284C7);
         }
 
         .bar-3 {
-            background: linear-gradient(to right, #B48EAD, #C49EBD);
+            background: linear-gradient(to right, #7DD3FC, #0369A1);
         }
 
         .bar-4 {
-            background: linear-gradient(to right, #EBCB8B, #FBDB9B);
+            background: linear-gradient(to right, #BAE6FD, #0284C7);
         }
 
         .bar-5 {
-            background: linear-gradient(to right, #D08770, #E09780);
+            background: linear-gradient(to right, #7C3AED, #8B5CF6);
         }
 
         /* AI animation elements */
@@ -383,7 +357,7 @@
         .stats-counter {
             font-size: 3rem;
             font-weight: 800;
-            background: linear-gradient(to right, var(--primary), #FF5B66);
+            background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
@@ -417,7 +391,7 @@
             position: absolute;
             width: 300px;
             height: 300px;
-            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border: 1px dashed rgba(158, 140, 255, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -430,7 +404,7 @@
             position: absolute;
             width: 200px;
             height: 200px;
-            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border: 1px dashed rgba(158, 140, 255, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -442,7 +416,7 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border: 1px dashed rgba(158, 140, 255, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -482,7 +456,7 @@
             width: 50px;
             height: 50px;
             background-color: var(--accent);
-            color: var(--secondary);
+            color: white;
             border-radius: 50%;
             font-size: 24px;
             font-weight: 700;
@@ -490,7 +464,7 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 4px 10px rgba(255, 206, 47, 0.3);
+            box-shadow: 0 4px 10px rgba(158, 140, 255, 0.3);
             position: relative;
             z-index: 1;
         }
@@ -628,6 +602,17 @@
         .university-logo {
             height: 30px;
         }
+
+        /* New logo styling */
+        .new-logo {
+            max-width: 180px;
+            height: auto;
+        }
+
+        .small-logo {
+            max-width: 60px;
+            height: auto;
+        }
     </style>
 </head>
 
@@ -643,8 +628,8 @@
         </div>
     </div>
 
-    <!-- UofA Colors Bar -->
-    <div class="uofa-colors-bar"></div>
+    <!-- Colors Bar -->
+    <div class="colors-bar"></div>
 
     <!-- Hero Section -->
     <section class="hero-split row g-0">
@@ -658,15 +643,7 @@
             <div class="container position-relative">
                 <div class="py-2 mb-4">
                     <div class="logo-container">
-                        <div class="logo animate__animated animate__fadeIn">
-                            <div class="logo-inner">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <div class="logo-outer"></div>
-                        </div>
-                        <h1 class="h3 fw-bold text-secondary-custom animate__animated animate__fadeIn">
-                            <span class="brand-text">VoiceBridge</span>
-                        </h1>
+                        <img src="logo.png" alt="VoiceBridge Logo" class="new-logo animate__animated animate__fadeIn">
                     </div>
                 </div>
 
@@ -703,23 +680,23 @@
 
             <div class="language-bars" data-aos="fade-left" data-aos-duration="800" data-aos-delay="300">
                 <div class="language-bar bar-1" data-lang="ENGLISH">
-                    <div class="lang-box">M</div>
+                    <div class="lang-box">E</div>
                     English
                 </div>
                 <div class="language-bar bar-2" data-lang="SPANISH">
-                    <div class="lang-box">U</div>
+                    <div class="lang-box">S</div>
                     Spanish
                 </div>
                 <div class="language-bar bar-3" data-lang="FRENCH">
-                    <div class="lang-box">B</div>
+                    <div class="lang-box">F</div>
                     French
                 </div>
                 <div class="language-bar bar-4" data-lang="CHINESE">
-                    <div class="lang-box">A</div>
+                    <div class="lang-box">C</div>
                     Chinese
                 </div>
                 <div class="language-bar bar-5" data-lang="ARABIC">
-                    <div class="lang-box">S</div>
+                    <div class="lang-box">A</div>
                     Arabic
                 </div>
             </div>
@@ -741,7 +718,7 @@
     </section>
 
     <!-- Stats Section -->
-    <section class="py-5" style="background: linear-gradient(135deg, #f8f0e3 0%, #fff8e7 100%);">
+    <section class="py-5" style="background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);">
         <div class="container py-3">
             <div class="row text-center g-4 justify-content-center">
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
@@ -757,7 +734,7 @@
     </section>
 
     <section id="demo" class="py-5 position-relative"
-        style="background: linear-gradient(135deg, #0C234B 0%, #183B6D 100%);">
+        style="background: linear-gradient(135deg, var(--dark-bg) 0%, #1E3A8A 100%);">
         <div class="circuit-pattern"></div>
         <div class="container py-5">
             <div class="row justify-content-center text-center">
@@ -859,7 +836,7 @@
         </div>
     </section>
 
-    <section class="py-5" style="background: linear-gradient(120deg, #FFF8E7 0%, #FFF1D0 100%);">
+    <section class="py-5" style="background: linear-gradient(120deg, #EFF6FF 0%, #DBEAFE 100%);">
         <div class="container py-4">
             <div class="row text-center mb-4">
                 <div class="col-lg-8 mx-auto" data-aos="fade-up">
@@ -921,20 +898,15 @@
         </div>
     </section>
 
-    <!-- UofA Colors Bar -->
-    <div class="uofa-colors-bar"></div>
+    <!-- Colors Bar -->
+    <div class="colors-bar"></div>
 
     <!-- Footer -->
     <footer class="bg-dark-custom text-white pt-5 pb-4">
         <div class="container text-center">
             <div class="mb-4">
                 <div class="logo-container justify-content-center mb-3">
-                    <div class="logo">
-                        <div class="logo-inner">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <div class="logo-outer"></div>
-                    </div>
+                    <img src="logo.png" alt="VoiceBridge Logo" class="small-logo">
                     <h2 class="h4 fw-bold m-0">
                         <span class="brand-text">VoiceBridge</span>
                     </h2>
@@ -953,31 +925,10 @@
             </div>
 
             <div class="row g-4 mb-4">
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <h5 class="mb-3 text-accent">About</h5>
                     <ul class="list-unstyled opacity-75">
                         <li><a href="#" class="text-white text-decoration-none">Our Team</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">Technology</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">GitHub Repository</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3 text-accent">Resources</h5>
-                    <ul class="list-unstyled opacity-75">
-                        <li><a href="#" class="text-white text-decoration-none">Documentation</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">Research Paper</a></li>
-                        <li><a href="#" class="text-white text-decoration-none">API Access</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3 text-accent">University</h5>
-                    <ul class="list-unstyled opacity-75">
-                        <li><a href="https://www.arizona.edu/" class="text-white text-decoration-none">UofA Homepage</a>
-                        </li>
-                        <li><a href="https://cs.arizona.edu/" class="text-white text-decoration-none">Computer Science
-                                Dept.</a></li>
-                        <li><a href="https://uarizona.cte.engineering/"
-                                class="text-white text-decoration-none">Innovation Center</a></li>
                     </ul>
                 </div>
             </div>
@@ -1095,7 +1046,7 @@
                             const size = Math.random() * 6 + 2;
                             const posX = Math.random() * 100;
                             const posY = Math.random() * 100;
-                            const color = Math.random() > 0.5 ? 'rgba(233, 34, 49, 0.3)' : 'rgba(255, 206, 47, 0.3)';
+                            const color = Math.random() > 0.5 ? 'rgba(54, 191, 250, 0.3)' : 'rgba(158, 140, 255, 0.3)';
 
                             particle.style.width = `${size}px`;
                             particle.style.height = `${size}px`;
