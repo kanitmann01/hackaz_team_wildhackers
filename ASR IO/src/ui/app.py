@@ -381,6 +381,7 @@ def create_ui():
             outputs=performance_stats,
             every=1.0
         )
+    
         
     return demo
 

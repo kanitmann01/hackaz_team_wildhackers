@@ -152,12 +152,12 @@ class StreamingTranslator:
         # Generate translation
         with torch.no_grad():
             translated_ids = self.model.generate(
-                **inputs,
-                forced_bos_token_id=self.tokenizer.lang_code_to_id[self.target_lang],
-                max_length=512,  # Increased for longer context
-                num_beams=2,  # Faster beam search
-                length_penalty=1.0  # Balanced length penalty
-            )
+            **inputs,
+            forced_bos_token_id=self.tokenizer.convert_tokens_to_ids(self.target_lang),
+            max_length=512,
+            num_beams=2,
+            length_penalty=1.0,
+)
         
         # Decode translation
         translation = self.tokenizer.batch_decode(

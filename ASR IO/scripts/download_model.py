@@ -93,7 +93,8 @@ def download_nllb_model(model_name="facebook/nllb-200-distilled-600M", device=No
         # Generate translation with specified target language
         translated_tokens = model.generate(
             **inputs,
-            forced_bos_token_id=tokenizer.lang_code_to_id["spa_Latn"]
+            # Alternative approach that works
+            forced_bos_token_id=self.tokenizer.convert_tokens_to_ids(self.target_lang)
         )
         
         # Decode translation

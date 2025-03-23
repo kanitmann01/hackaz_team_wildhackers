@@ -149,7 +149,7 @@ class StreamingTTS:
         
         # Skip empty text
         if not text or not text.strip():
-            return None
+            return np.array([], dtype=np.float32)
         
         # Use dummy TTS if model failed to load
         if self.model is None or self.processor is None:
@@ -175,15 +175,42 @@ class StreamingTTS:
                     return_tensors="pt"
                 ).to(self.device)
                 
-                # Generate speech
+                # Generate speech - FIX: Don't pass language to forward
                 with torch.no_grad():
-                    output = self.model(
-                        **inputs,
-                        language=self.language_code
-                    )
+                    # Version 1: Try without language parameter
+                    try:
+                        output = self.model(**inputs)
+                    except Exception as e1:
+                        print(f"Error with version 1 synthesis: {e1}")
+                        # Version 2: Try with language parameter
+                        try:
+                            output = self.model(**inputs, language=self.language_code)
+                        except Exception as e2:
+                            print(f"Error with version 2 synthesis: {e2}")
+                            # Version 3: Try accessing waveform differently
+                            try:
+                                # Use generate instead of forward
+                                output = self.model.generate(**inputs)
+                                # Return empty array as fallback
+                                if not hasattr(output, 'waveform'):
+                                    print(f"Error synthesizing speech for chunk '{chunk}': Output has no waveform attribute")
+                                    continue
+                            except Exception as e3:
+                                print(f"Error with version 3 synthesis: {e3}")
+                                continue
                 
                 # Extract audio data
-                speech = output.waveform.cpu().numpy().squeeze()
+                if hasattr(output, 'waveform'):
+                    speech = output.waveform.cpu().numpy().squeeze()
+                else:
+                    # Try to access different output formats
+                    if hasattr(output, 'audio'):
+                        speech = output.audio.cpu().numpy().squeeze()
+                    elif isinstance(output, torch.Tensor):
+                        speech = output.cpu().numpy().squeeze()
+                    else:
+                        print(f"Error synthesizing speech for chunk '{chunk}': Unknown output format")
+                        continue
                 
                 # Normalize audio
                 if np.abs(speech).max() > 0:
