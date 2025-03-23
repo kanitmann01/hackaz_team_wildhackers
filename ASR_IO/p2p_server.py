@@ -122,6 +122,7 @@ class TranslationSession:
             # Process with ASR
             asr_result = asr.transcribe_chunk(audio_data, sample_rate)
             source_text = asr_result['full_text']
+            new_source_text = asr_result['text']  # Just the new part
             
             # Update text buffer
             if is_user1:
@@ -140,6 +141,7 @@ class TranslationSession:
             # Translate the new text
             mt_result = mt.translate_chunk(asr_result['text'], force=True)
             translated_text = mt_result['full_text']
+            new_translated_text = mt_result['text']  # Just the new part
             
             # Update translation buffer
             if is_user1:
@@ -161,7 +163,9 @@ class TranslationSession:
             # Return results
             return {
                 'source_text': source_text,
+                'new_source_text': new_source_text,
                 'translated_text': translated_text,
+                'new_translated_text': new_translated_text,
                 'new_audio': audio_b64
             }
         
@@ -405,9 +409,13 @@ def handle_disconnect():
                 # Get other user
                 other_user = None
                 if user_id == session.user1_id:
+                    session.asr_1to2.reset_context()
+                    session.mt_1to2.reset_context()  # This is crucial
                     other_user = session.user2_id
                     session.user1_id = None
                 elif user_id == session.user2_id:
+                    session.asr_2to1.reset_context()
+                    session.mt_2to1.reset_context()  # This is crucial
                     other_user = session.user1_id
                     session.user2_id = None
                 
@@ -563,9 +571,9 @@ def handle_audio(data):
         # Send source text update to sender
         emit('text_update', {
             'type': 'source',
-            'text': result['source_text']
+            'text': result['new_source_text']  # Just the new part
         })
-        
+
         # Get recipient
         recipient_id = session.get_other_user(user_id)
         
@@ -576,7 +584,7 @@ def handle_audio(data):
             # Send translation text
             emit('text_update', {
                 'type': 'translation',
-                'text': result['translated_text']
+                'text': result['new_translated_text']  # Changed from translated_text to new_translated_text
             }, to=recipient_sid)
             
             # Send audio if available
