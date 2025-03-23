@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoiceBridge - Real-time Speech Translation | University of Arizona</title>
-    
     <!-- SEO and Sharing Meta Tags -->
     <meta name="description" content="VoiceBridge - Breaking language barriers at the University of Arizona through real-time AI-powered speech translation technology.">
     <meta name="keywords" content="translation, AI, speech recognition, University of Arizona, language barriers">
@@ -192,6 +191,18 @@
             overflow: hidden;
             z-index: 0;
         }
+
+        .new-logo {
+    max-width: 180px;
+    height: auto;
+    border-radius: 16px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(54, 191, 250, 0.15); /* Subtle shadow */
+    transition: transform 0.3s ease;
+}
+
+.new-logo:hover {
+    transform: scale(1.02); /* Very subtle grow effect on hover */
+}
 
         /* Enhanced particle styling */
         .particle {
@@ -904,9 +915,9 @@
                     <div class="lang-box">S</div>
                     Spanish
                 </div>
-                <div class="language-bar bar-3" data-lang="FRANÇAIS">
+                <div class="language-bar bar-3" data-lang="हिन्दी">
                     <div class="lang-box">F</div>
-                    French
+                    Hindi
                 </div>
                 <div class="language-bar bar-4" data-lang="中文">
                     <div class="lang-box">C</div>
@@ -1124,7 +1135,7 @@
         <div class="container text-center">
             <div class="mb-4">
                 <div class="logo-container justify-content-center mb-3">
-                    <img src="logo.png" alt="VoiceBridge Logo" class="small-logo">
+                    <img src="logo.png" alt="VoiceBridge Logo" class="new-logo animate__animated animate__fadeIn">
                     <h2 class="h4 fw-bold m-0">
                         <span class="brand-text">VoiceBridge</span>
                     </h2>
