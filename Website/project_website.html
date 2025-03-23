@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceBridge - Real-time Speech Translation | University of Arizona</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Custom styling -->
+    <style>
+        :root {
+            --primary: #FF304F;
+            /* Vibrant UofA Red */
+            --secondary: #0C234B;
+            /* UofA Blue */
+            --accent: #FFD23F;
+            /* Brighter UofA Gold */
+            --light-bg: #FFF8E7;
+            /* Warm light background */
+            --dark-bg: #0A1A2F;
+            /* Richer dark blue background */
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            overflow-x: hidden;
+            background-color: #f9f9f9;
+        }
+
+        /* Custom classes to extend Bootstrap */
+        .bg-light-custom {
+            background-color: var(--light-bg);
+        }
+
+        .bg-dark-custom {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #163A66 100%);
+        }
+
+        .text-primary-custom {
+            color: var(--primary) !important;
+        }
+
+        .text-secondary-custom {
+            color: var(--secondary) !important;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(to right, var(--primary), #FF5B66);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 34, 49, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 34, 49, 0.35);
+            color: white;
+        }
+
+        .btn-secondary-custom {
+            background: linear-gradient(to right, var(--secondary), #1A407A);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 15px rgba(12, 35, 75, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(12, 35, 75, 0.35);
+            color: white;
+        }
+
+        /* Logo styling */
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            margin-right: 12px;
+        }
+
+        .logo-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #FF5B66);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 10px rgba(233, 34, 49, 0.3);
+            z-index: 2;
+        }
+
+        .logo-outer {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: var(--secondary);
+            z-index: 1;
+        }
+
+        .brand-text {
+            font-weight: 800;
+            font-size: 24px;
+            background: linear-gradient(to right, var(--primary), #FF5B66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-left: 5px;
+        }
+
+        /* Split hero section */
+        .hero-split {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Particle animation container */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        /* UofA branding elements */
+        .uofa-watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://brand.arizona.edu/sites/default/files/styles/uaqs_small/public/block-a-with-crest.png?itok=LS-_Oa_O');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .uofa-colors-bar {
+            height: 6px;
+            background: linear-gradient(to right, var(--primary) 33%, var(--accent) 33%, var(--accent) 66%, var(--secondary) 66%);
+            width: 100%;
+        }
+
+        /* Hero content */
+        .hero-left {
+            position: relative;
+            z-index: 1;
+            padding: 5rem 2rem;
+            background: linear-gradient(120deg, var(--light-bg) 0%, #FFF1D0 100%);
+        }
+
+        .hero-right {
+            position: relative;
+            overflow: hidden;
+            padding: 3rem;
+            background: linear-gradient(135deg, #0A1A2F 0%, #184080 100%);
+        }
+
+        .hero-left::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(233, 34, 49, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -100px;
+            left: -100px;
+            z-index: -1;
+        }
+
+        .hero-title {
+            font-weight: 800;
+            line-height: 1.1;
+            position: relative;
+        }
+
+        .hero-title .highlight {
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-title .highlight::after {
+            content: "";
+            position: absolute;
+            height: 8px;
+            width: 100%;
+            background-color: rgba(233, 34, 49, 0.2);
+            bottom: 6px;
+            left: 0;
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        /* Language Bars */
+        .language-bars {
+            width: 100%;
+            max-width: 450px;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .language-bar {
+            height: 60px;
+            width: 0%;
+            /* Start at 0 for animation */
+            border-radius: 10px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            color: white;
+            font-weight: 700;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .language-bar::after {
+            content: attr(data-lang);
+            position: absolute;
+            right: 20px;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.5s;
+        }
+
+        .language-bar.show-label::after {
+            opacity: 1;
+        }
+
+        .lang-box {
+            width: 44px;
+            height: 44px;
+            background-color: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bar-1 {
+            background: linear-gradient(to right, #64B6AC, #73C6BC);
+        }
+
+        .bar-2 {
+            background: linear-gradient(to right, #5E81AC, #6E91BC);
+        }
+
+        .bar-3 {
+            background: linear-gradient(to right, #B48EAD, #C49EBD);
+        }
+
+        .bar-4 {
+            background: linear-gradient(to right, #EBCB8B, #FBDB9B);
+        }
+
+        .bar-5 {
+            background: linear-gradient(to right, #D08770, #E09780);
+        }
+
+        /* AI animation elements */
+        .wave-animation {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wave-bar {
+            width: 3px;
+            height: 100%;
+            margin: 0 2px;
+            background-color: rgba(255, 255, 255, 0.2);
+            animation: sound 1.5s linear infinite alternate;
+        }
+
+        @keyframes sound {
+            0% {
+                height: 5px;
+            }
+
+            100% {
+                height: 40px;
+            }
+        }
+
+        .wave-bar:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .wave-bar:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .wave-bar:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .wave-bar:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .wave-bar:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .wave-bar:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .wave-bar:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .wave-bar:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .wave-bar:nth-child(9) {
+            animation-delay: 0.9s;
+        }
+
+        .wave-bar:nth-child(10) {
+            animation-delay: 1.0s;
+        }
+
+        /* Circuit board pattern for tech feel */
+        .circuit-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMC4yIj48cGF0aCBkPSJNMTAsMTAgTDkwLDEwIE05MCw5MCBMMTASOTBMMTASMTBNNTA1MCBMNTAsMTAgTTUwLDUwIEw5MCw1MCBNNTAsNTAgTDUwLDkwIE01MCw1MCBMMTAsNTAiLz48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIyIi8+PGNpcmNsZSBjeD0iOTAiIGN5PSIxMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMCIgY3k9IjkwIiByPSIyIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMiIvPjwvZz48L3N2Zz4=');
+            background-size: 100px 100px;
+            opacity: 0.03;
+            z-index: 0;
+        }
+
+        /* Stats section */
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), #FF5B66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-label {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Section styling */
+        .section-title-border {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title-border::after {
+            content: "";
+            position: absolute;
+            height: 4px;
+            width: 60px;
+            background-color: var(--accent);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Tech decoration elements */
+        .tech-circles {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .tech-circles::before {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .tech-circles::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 1px dashed rgba(255, 206, 47, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Step cards */
+        .step-card {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZyBmaWxsPSJub25lIiBzdHJva2U9IiMwQzIzNEIiIHN0cm9rZS13aWR0aD0iMC4yIj48cGF0aCBkPSJNMTAsMTAgTDkwLDEwIE05MCw5MCBMMTASOTBMMTASMTBNNTA1MCBMNTAsMTAgTTUwLDUwIEw5MCw1MCBNNTAsNTAgTDUwLDkwIE01MCw1MCBMMTAsNTAiLz48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIyIi8+PGNpcmNsZSBjeD0iOTAiIGN5PSIxMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMCIgY3k9IjkwIiByPSIyIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMiIvPjwvZz48L3N2Zz4=');
+            background-size: 50px 50px;
+            opacity: 0.05;
+            z-index: 0;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent);
+            color: var(--secondary);
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 10px rgba(255, 206, 47, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Language tags */
+        .language-tag {
+            background-color: var(--light-bg);
+            padding: 0.5rem 1.25rem;
+            border-radius: 30px;
+            font-weight: 500;
+            display: inline-block;
+            margin: 0.35rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .language-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Demo section */
+        .launch-btn {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .launch-btn::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            background: repeating-linear-gradient(45deg,
+                    rgba(255, 255, 255, 0.1),
+                    rgba(255, 255, 255, 0.1) 10px,
+                    rgba(255, 255, 255, 0) 10px,
+                    rgba(255, 255, 255, 0) 20px);
+            animation: slidingStripes 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes slidingStripes {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+
+            100% {
+                transform: translateX(-20px) translateY(-20px);
+            }
+        }
+
+        /* Blinking cursor animation */
+        .typing-animation {
+            display: inline-block;
+            position: relative;
+        }
+
+        .typing-animation::after {
+            content: "|";
+            position: absolute;
+            right: -10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Testimonial section */
+        .testimonial-card {
+            border-radius: 1rem;
+            border: none;
+            background-color: white;
+            position: relative;
+            padding: 2rem;
+            margin-top: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .testimonial-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .testimonial-quote {
+            font-style: italic;
+            margin-top: 2rem;
+        }
+
+        /* Footer */
+        .footer-social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social-link:hover {
+            background-color: var(--accent);
+            color: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        /* University styling */
+        .university-bar {
+            background-color: var(--secondary);
+            padding: 0.5rem 0;
+        }
+
+        .university-logo {
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- University Bar -->
+    <div class="university-bar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <img src="https://www.arizona.edu/sites/default/files/UA_horiz_RGB_50px.png" alt="University of Arizona"
+                    class="university-logo">
+                <span class="text-white small">A Student Project</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- UofA Colors Bar -->
+    <div class="uofa-colors-bar"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-split row g-0">
+        <div class="hero-left col-lg-6 bg-light-custom d-flex flex-column justify-content-center">
+            <!-- Circuit pattern for tech feel -->
+            <div class="circuit-pattern"></div>
+
+            <!-- UofA watermark -->
+            <div class="uofa-watermark"></div>
+
+            <div class="container position-relative">
+                <div class="py-2 mb-4">
+                    <div class="logo-container">
+                        <div class="logo animate__animated animate__fadeIn">
+                            <div class="logo-inner">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="logo-outer"></div>
+                        </div>
+                        <h1 class="h3 fw-bold text-secondary-custom animate__animated animate__fadeIn">
+                            <span class="brand-text">VoiceBridge</span>
+                        </h1>
+                    </div>
+                </div>
+
+                <div data-aos="fade-up" data-aos-duration="800">
+                    <h2 class="hero-title display-3 mb-4 text-secondary-custom">
+                        Breaking <span class="highlight">language</span> barriers at UofA.
+                    </h2>
+                    <h3 class="h4 fw-normal mb-3 text-secondary-custom opacity-75 typing-animation">
+                        Real-time speech translation prototype
+                    </h3>
+                    <p class="lead text-secondary-custom opacity-75 mb-5">
+                        A prototype AI-powered platform designed to connect University of Arizona students across
+                        language divides.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#demo" class="btn btn-primary-custom btn-lg px-4 py-3">
+                            <i class="fas fa-rocket me-2"></i> Try Demo
+                        </a>
+                        <a href="#how-it-works" class="btn btn-secondary-custom btn-lg px-4 py-3">
+                            <i class="fas fa-cogs me-2"></i> How It Works
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right col-lg-6 bg-dark-custom d-flex align-items-center justify-content-center">
+            <!-- Particles animation -->
+            <div class="particles-container" id="particles-container"></div>
+
+            <!-- Circular tech decoration -->
+            <div class="tech-circles animate__animated animate__pulse animate__infinite animate__slow"></div>
+
+            <div class="language-bars" data-aos="fade-left" data-aos-duration="800" data-aos-delay="300">
+                <div class="language-bar bar-1" data-lang="ENGLISH">
+                    <div class="lang-box">M</div>
+                    English
+                </div>
+                <div class="language-bar bar-2" data-lang="SPANISH">
+                    <div class="lang-box">U</div>
+                    Spanish
+                </div>
+                <div class="language-bar bar-3" data-lang="FRENCH">
+                    <div class="lang-box">B</div>
+                    French
+                </div>
+                <div class="language-bar bar-4" data-lang="CHINESE">
+                    <div class="lang-box">A</div>
+                    Chinese
+                </div>
+                <div class="language-bar bar-5" data-lang="ARABIC">
+                    <div class="lang-box">S</div>
+                    Arabic
+                </div>
+            </div>
+
+            <!-- Sound wave animation -->
+            <div class="wave-animation">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5" style="background: linear-gradient(135deg, #f8f0e3 0%, #fff8e7 100%);">
+        <div class="container py-3">
+            <div class="row text-center g-4 justify-content-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stats-counter" data-count="12">0</div>
+                    <div class="stats-label">Languages Supported</div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stats-counter" data-count="3">0</div>
+                    <div class="stats-label">AI Models</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="demo" class="py-5 position-relative"
+        style="background: linear-gradient(135deg, #0C234B 0%, #183B6D 100%);">
+        <div class="circuit-pattern"></div>
+        <div class="container py-5">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <h2 class="display-5 fw-bold mb-3 text-white section-title-border">
+                        Experience VoiceBridge
+                    </h2>
+                    <p class="mb-5 text-white opacity-75">
+                        Experience our prototype that enables real-time communication across language barriers.
+                    </p>
+
+                    <div class="card p-4 mb-5 border-0 shadow"
+                        style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <img src="https://brand.arizona.edu/sites/default/files/styles/uaqs_medium/public/wildcats-international-students.jpg?itok=tD42lKRB"
+                                        alt="UofA International Students" class="img-fluid rounded-3">
+                                </div>
+                                <div class="col-md-6 text-start">
+                                    <h3 class="h4 mb-3 text-secondary-custom">Bridge language gaps on campus</h3>
+                                    <p class="mb-4">VoiceBridge helps UofA students communicate across language
+                                        barriers, facilitating cultural exchange and academic collaboration.</p>
+                                    <button class="btn btn-primary-custom btn-lg px-5 py-3 launch-btn">
+                                        <i class="fas fa-rocket me-2"></i> Launch Demo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 bg-white position-relative">
+        <div class="container py-5">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto" data-aos="fade-up">
+                    <h2 class="display-5 fw-bold mb-3 text-secondary-custom section-title-border">
+                        How It Works
+                    </h2>
+                    <p class="lead mb-4 text-secondary-custom opacity-75">
+                        Our technology uses state-of-the-art AI to enable seamless communication across languages.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card step-card p-4 text-center h-100">
+                        <div class="card-body">
+                            <div class="step-number animate__animated animate__bounce animate__delay-1s">1</div>
+                            <h3 class="h4 fw-bold mb-3 text-secondary-custom">Speech Recognition</h3>
+                            <p class="text-secondary-custom opacity-75">
+                                Whisper ASR technology converts spoken words to text with high accuracy, even in noisy
+                                environments.
+                            </p>
+                            <div class="mt-3">
+                                <i class="fas fa-microphone fa-2x text-primary-custom opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card step-card p-4 text-center h-100">
+                        <div class="card-body">
+                            <div class="step-number animate__animated animate__bounce animate__delay-2s">2</div>
+                            <h3 class="h4 fw-bold mb-3 text-secondary-custom">Translation</h3>
+                            <p class="text-secondary-custom opacity-75">
+                                NLLB-200 model instantly translates text to the target language with contextual
+                                understanding.
+                            </p>
+                            <div class="mt-3">
+                                <i class="fas fa-language fa-2x text-primary-custom opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card step-card p-4 text-center h-100">
+                        <div class="card-body">
+                            <div class="step-number animate__animated animate__bounce animate__delay-3s">3</div>
+                            <h3 class="h4 fw-bold mb-3 text-secondary-custom">Speech Synthesis</h3>
+                            <p class="text-secondary-custom opacity-75">
+                                MMS-TTS technology converts translated text to natural-sounding speech in the target
+                                language.
+                            </p>
+                            <div class="mt-3">
+                                <i class="fas fa-volume-up fa-2x text-primary-custom opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5" style="background: linear-gradient(120deg, #FFF8E7 0%, #FFF1D0 100%);">
+        <div class="container py-4">
+            <div class="row text-center mb-4">
+                <div class="col-lg-8 mx-auto" data-aos="fade-up">
+                    <h2 class="display-5 fw-bold mb-3 text-secondary-custom section-title-border">
+                        Technology Stack
+                    </h2>
+                    <p class="mb-0 text-secondary-custom opacity-75">
+                        Powered by cutting-edge AI models
+                    </p>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-2">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100 border-0 shadow-sm"
+                        style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-microphone fa-3x text-primary-custom opacity-75"></i>
+                            </div>
+                            <h4 class="card-title mb-3">Whisper ASR</h4>
+                            <p class="card-text text-secondary-custom opacity-75">
+                                State-of-the-art speech recognition with multilingual support
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100 border-0 shadow-sm"
+                        style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-language fa-3x text-primary-custom opacity-75"></i>
+                            </div>
+                            <h4 class="card-title mb-3">NLLB-200</h4>
+                            <p class="card-text text-secondary-custom opacity-75">
+                                Neural machine translation covering 200+ languages with high accuracy
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card h-100 border-0 shadow-sm"
+                        style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-volume-up fa-3x text-primary-custom opacity-75"></i>
+                            </div>
+                            <h4 class="card-title mb-3">MMS-TTS</h4>
+                            <p class="card-text text-secondary-custom opacity-75">
+                                Multilingual speech synthesis for natural-sounding output
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UofA Colors Bar -->
+    <div class="uofa-colors-bar"></div>
+
+    <!-- Footer -->
+    <footer class="bg-dark-custom text-white pt-5 pb-4">
+        <div class="container text-center">
+            <div class="mb-4">
+                <div class="logo-container justify-content-center mb-3">
+                    <div class="logo">
+                        <div class="logo-inner">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="logo-outer"></div>
+                    </div>
+                    <h2 class="h4 fw-bold m-0">
+                        <span class="brand-text">VoiceBridge</span>
+                    </h2>
+                </div>
+                <p class="mb-4 opacity-75 mx-auto" style="max-width: 600px;">
+                    Breaking language barriers at the University of Arizona through real-time speech translation
+                    technology.
+                </p>
+
+                <div class="mb-4">
+                    <a href="#" class="footer-social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social-link"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <h5 class="mb-3 text-accent">About</h5>
+                    <ul class="list-unstyled opacity-75">
+                        <li><a href="#" class="text-white text-decoration-none">Our Team</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Technology</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">GitHub Repository</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-3 text-accent">Resources</h5>
+                    <ul class="list-unstyled opacity-75">
+                        <li><a href="#" class="text-white text-decoration-none">Documentation</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Research Paper</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">API Access</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-3 text-accent">University</h5>
+                    <ul class="list-unstyled opacity-75">
+                        <li><a href="https://www.arizona.edu/" class="text-white text-decoration-none">UofA Homepage</a>
+                        </li>
+                        <li><a href="https://cs.arizona.edu/" class="text-white text-decoration-none">Computer Science
+                                Dept.</a></li>
+                        <li><a href="https://uarizona.cte.engineering/"
+                                class="text-white text-decoration-none">Innovation Center</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4 opacity-25">
+
+            <p class="small opacity-50 mt-4">
+                HackAZ 2025 &bull; University of Arizona
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <script>
+        // Initialize AOS animations
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                // Initialize AOS
+                AOS.init({
+                    duration: 800,
+                    once: true
+                });
+
+                // Animate language bars on page load with defensive programming
+                setTimeout(function () {
+                    try {
+                        // Get all language bar elements
+                        const languageBars = document.querySelectorAll('.language-bar');
+
+                        // If no bars found, exit gracefully
+                        if (!languageBars || languageBars.length === 0) return;
+
+                        // Set the bar widths using classes
+                        const widths = {
+                            'bar-1': '85%',
+                            'bar-2': '90%',
+                            'bar-3': '78%',
+                            'bar-4': '88%',
+                            'bar-5': '82%'
+                        };
+
+                        // Animate each bar with proper error handling
+                        languageBars.forEach(function (bar, index) {
+                            if (!bar) return; // Skip if bar is null
+
+                            setTimeout(function () {
+                                try {
+                                    // Find the corresponding width for this bar
+                                    let width = '80%'; // Default width
+
+                                    // Determine the correct width based on class
+                                    Object.keys(widths).forEach(function (className) {
+                                        if (bar.classList.contains(className)) {
+                                            width = widths[className];
+                                        }
+                                    });
+
+                                    // Apply the width
+                                    bar.style.width = width;
+
+                                    // Fade in the lang box if it exists
+                                    try {
+                                        const langBox = bar.querySelector('.lang-box');
+                                        if (langBox) {
+                                            langBox.style.opacity = '1';
+                                        }
+                                    } catch (innerError) {
+                                        console.log('Note: Could not animate language box');
+                                    }
+
+                                    // Add the show-label class after a delay
+                                    setTimeout(function () {
+                                        try {
+                                            bar.classList.add('show-label');
+                                        } catch (labelError) {
+                                            console.log('Note: Could not show label');
+                                        }
+                                    }, 500);
+
+                                } catch (barError) {
+                                    console.log('Note: Error animating a language bar');
+                                }
+                            }, index * 200); // Stagger animations
+                        });
+                    } catch (animationError) {
+                        console.log('Note: Animation could not be completed');
+                    }
+                }, 500);
+
+                // Set up demo button
+                try {
+                    const demoButton = document.querySelector('.launch-btn');
+                    if (demoButton) {
+                        demoButton.addEventListener('click', function () {
+                            alert('This button will be connected to your local demo server.');
+                        });
+                    }
+                } catch (buttonError) {
+                    console.log('Note: Demo button could not be set up');
+                }
+
+                // Create floating particles
+                try {
+                    const particlesContainer = document.getElementById('particles-container');
+                    if (particlesContainer) {
+                        for (let i = 0; i < 30; i++) {
+                            const particle = document.createElement('div');
+                            particle.classList.add('particle');
+
+                            // Random size, position, and color
+                            const size = Math.random() * 6 + 2;
+                            const posX = Math.random() * 100;
+                            const posY = Math.random() * 100;
+                            const color = Math.random() > 0.5 ? 'rgba(233, 34, 49, 0.3)' : 'rgba(255, 206, 47, 0.3)';
+
+                            particle.style.width = `${size}px`;
+                            particle.style.height = `${size}px`;
+                            particle.style.left = `${posX}%`;
+                            particle.style.top = `${posY}%`;
+                            particle.style.backgroundColor = color;
+
+                            // Random floating animation
+                            const animDuration = Math.random() * 20 + 10;
+                            const animDelay = Math.random() * 5;
+
+                            particle.style.animation = `float ${animDuration}s ease-in-out ${animDelay}s infinite alternate`;
+
+                            particlesContainer.appendChild(particle);
+                        }
+                    }
+                } catch (particleError) {
+                    console.log('Note: Could not create particle animation');
+                }
+
+                // Animate counters
+                try {
+                    const counters = document.querySelectorAll('.stats-counter');
+                    const speed = 200;
+
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.getAttribute('data-count'));
+                        const count = 0;
+                        const increment = Math.ceil(target / speed);
+
+                        function updateCount() {
+                            const currentCount = parseInt(counter.innerText);
+                            if (currentCount < target) {
+                                counter.innerText = Math.min(currentCount + increment, target);
+                                setTimeout(updateCount, 20);
+                            }
+                        }
+
+                        // Start counting when element is in view
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    counter.innerText = count;
+                                    updateCount();
+                                    observer.unobserve(entry.target);
+                                }
+                            });
+                        });
+
+                        observer.observe(counter);
+                    });
+                } catch (counterError) {
+                    console.log('Note: Could not animate counters');
+                }
+
+                // Implement smooth scrolling
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        const targetId = this.getAttribute('href');
+                        if (!targetId) return;
+
+                        const targetElement = document.querySelector(targetId);
+                        if (!targetElement) return;
+
+                        window.scrollTo({
+                            top: targetElement.offsetTop,
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+
+                // Particle animation
+                document.head.insertAdjacentHTML('beforeend', `
+                    <style>
+                        @keyframes float {
+                            0% { transform: translate(0, 0) rotate(0deg); }
+                            50% { transform: translate(20px, -20px) rotate(180deg); }
+                            100% { transform: translate(-20px, 20px) rotate(360deg); }
+                        }
+                    </style>
+                `);
+
+            } catch (error) {
+                console.log('Error initializing scripts:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
