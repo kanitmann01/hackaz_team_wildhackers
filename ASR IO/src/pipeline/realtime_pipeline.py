@@ -3,6 +3,7 @@ import time
 import queue
 from threading import Thread
 
+
 class RealTimeTranslationPipeline:
     """
     Integrated pipeline for real-time speech-to-speech translation.

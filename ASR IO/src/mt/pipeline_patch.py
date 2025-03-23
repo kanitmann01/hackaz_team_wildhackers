@@ -1,4 +1,37 @@
-import torch
+import os
+import sys
+
+# Add directory to path if not already there
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
+
+# Copy the EnhancedStreamingTTS class to the TTS module
+from enhanced_tts import EnhancedStreamingTTS
+
+# Save original imports for reference
+# from src.tts.streaming_tts import StreamingTTS
+
+def patch_pipeline():
+    """
+    Patch the pipeline to use the EnhancedStreamingTTS.
+    This function should be called before creating the pipeline.
+    """
+    # Import necessary modules
+    import sys
+    import os
+    from importlib import reload
+    
+    # Add the Enhanced TTS to the src/tts directory
+    tts_dir = os.path.join(os.path.dirname(__file__), "src", "tts")
+    os.makedirs(tts_dir, exist_ok=True)
+    
+    enhanced_tts_path = os.path.join(tts_dir, "enhanced_tts.py")
+    
+    # Save the EnhancedStreamingTTS class to a file
+    with open(enhanced_tts_path, "w") as f:
+        f.write("""import torch
 import numpy as np
 import time
 import re
@@ -11,23 +44,22 @@ logging.basicConfig(level=logging.INFO,
                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('TTS')
 
-class StreamingTTS:
-    """
-    Real-time streaming Text-to-Speech synthesis using VITS.
+class EnhancedStreamingTTS:
+    \"\"\"
+    Improved real-time streaming Text-to-Speech synthesis using MMS-TTS.
     
-    This class implements incremental speech synthesis, generating
-    audio for text fragments as they arrive from the translation system
-    and allowing for immediate playback.
-    """
+    This class addresses compatibility issues with the translation pipeline
+    and provides better error handling and diagnostics.
+    \"\"\"
     
     def __init__(self, device=None, model_name="facebook/mms-tts-eng"):
-        """
-        Initialize the streaming TTS component with VITS model.
+        \"\"\"
+        Initialize the streaming TTS component with MMS-TTS model.
         
         Args:
             device: Computation device ('cuda' or 'cpu')
             model_name: TTS model to use (default: MMS-TTS English model)
-        """
+        \"\"\"
         # Set device (use CUDA if available unless specified otherwise)
         if device is None:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +94,7 @@ class StreamingTTS:
         os.makedirs("data/samples", exist_ok=True)
     
     def _load_model(self, model_name):
-        """Load the TTS model with proper error handling."""
+        \"\"\"Load the TTS model with proper error handling.\"\"\"
         logger.info(f"Loading TTS model: {model_name} on {self.device}")
         
         try:
@@ -86,7 +118,7 @@ class StreamingTTS:
             return False
     
     def set_language(self, language_code):
-        """
+        \"\"\"
         Set the target language for TTS with improved language code handling.
         
         Args:
@@ -94,7 +126,7 @@ class StreamingTTS:
         
         Returns:
             bool: True if language changed successfully
-        """
+        \"\"\"
         # MMS language code mapping (ISO to internal codes)
         iso_to_mms = {
             "en": "eng", "eng_Latn": "eng",
@@ -146,7 +178,7 @@ class StreamingTTS:
         return True
     
     def _split_into_sentences(self, text):
-        """
+        \"\"\"
         Split text into sentence-like chunks for better synthesis.
         
         Args:
@@ -154,9 +186,9 @@ class StreamingTTS:
             
         Returns:
             list: List of text chunks
-        """
+        \"\"\"
         # Add space after punctuation if not present
-        text = self.punct_regex.sub(r'\1 ', text)
+        text = self.punct_regex.sub(r'\\1 ', text)
         
         # Split by punctuation
         chunks = []
@@ -177,7 +209,7 @@ class StreamingTTS:
         return chunks
     
     def synthesize_speech(self, text, play_callback=None):
-        """
+        \"\"\"
         Synthesize speech from text with improved error handling.
         
         Args:
@@ -186,7 +218,7 @@ class StreamingTTS:
             
         Returns:
             numpy.ndarray: Audio data
-        """
+        \"\"\"
         start_time = time.time()
         
         # Skip empty text
@@ -254,7 +286,7 @@ class StreamingTTS:
                             speech = output.waveform.cpu().numpy().squeeze()
                             logger.info("Approach 2 successful")
                     except Exception as e2:
-                        error_msg = f"{error_msg}\nApproach 2 failed: {e2}"
+                        error_msg = f"{error_msg}\\nApproach 2 failed: {e2}"
                         logger.debug(f"Approach 2 failed: {e2}")
                 
                 # Approach 3: Using generate method
@@ -267,7 +299,7 @@ class StreamingTTS:
                             speech = output.cpu().numpy().squeeze()
                             logger.info("Approach 3 successful")
                     except Exception as e3:
-                        error_msg = f"{error_msg}\nApproach 3 failed: {e3}"
+                        error_msg = f"{error_msg}\\nApproach 3 failed: {e3}"
                         logger.debug(f"Approach 3 failed: {e3}")
                 
                 # If all approaches failed, log and skip
@@ -333,7 +365,7 @@ class StreamingTTS:
         return combined_audio
     
     def get_stats(self):
-        """Get performance statistics."""
+        \"\"\"Get performance statistics.\"\"\"
         return {
             'total_chunks': self.chunk_count,
             'total_processing_time': self.total_processing_time,
@@ -343,3 +375,127 @@ class StreamingTTS:
             'language': self.language_code,
             'model': self.model_name
         }
+""")
+    
+    # Write a simple patch module to monkeypatch
+    patch_module_path = os.path.join(tts_dir, "patch.py")
+    with open(patch_module_path, "w") as f:
+        f.write("""
+from src.tts.enhanced_tts import EnhancedStreamingTTS
+
+# Create a function to patch the pipeline initialization
+def patch_pipeline_init(init_pipeline_func):
+    \"\"\"
+    Replace the TTS model in the pipeline initialization with EnhancedStreamingTTS.
+    \"\"\"
+    def patched_init_pipeline(*args, **kwargs):
+        # Call original function
+        result = init_pipeline_func(*args, **kwargs)
+        
+        # Get pipeline instance
+        from src.pipeline.realtime_pipeline import RealTimeTranslationPipeline
+        
+        # Find all pipeline instances and patch them
+        import gc
+        for obj in gc.get_objects():
+            if isinstance(obj, RealTimeTranslationPipeline):
+                print("Found pipeline instance - replacing TTS component")
+                
+                # Create new enhanced TTS with same device
+                old_tts = obj.tts
+                device = old_tts.device if hasattr(old_tts, 'device') else None
+                language = old_tts.language_code if hasattr(old_tts, 'language_code') else "eng"
+                
+                # Replace with enhanced TTS
+                new_tts = EnhancedStreamingTTS(device=device)
+                new_tts.set_language(language)
+                obj.tts = new_tts
+                
+                print(f"Pipeline TTS replaced with EnhancedStreamingTTS ({language})")
+        
+        return result
+    
+    return patched_init_pipeline
+
+# Create a function to apply all patches
+def apply_patches():
+    \"\"\"Apply all patches to the pipeline components.\"\"\"
+    import importlib
+    
+    # Patch the app.py initialization
+    try:
+        from src.ui import app
+        app.initialize_components = patch_pipeline_init(app.initialize_components)
+        print("Patched app.py initialize_components")
+    except Exception as e:
+        print(f"Error patching app.py: {e}")
+    
+    # Patch the diagnostics.py initialization
+    try:
+        import diagnostics
+        diagnostics.init_pipeline = patch_pipeline_init(diagnostics.init_pipeline)
+        print("Patched diagnostics.py init_pipeline")
+    except Exception as e:
+        print(f"Error patching diagnostics.py: {e}")
+    
+    # Patch the main.py
+    try:
+        import main
+        if hasattr(main, 'main'):
+            original_main = main.main
+            
+            def patched_main(*args, **kwargs):
+                # Apply our patch first
+                from src.tts.patch import apply_patches
+                apply_patches()
+                
+                # Call original main
+                return original_main(*args, **kwargs)
+            
+            main.main = patched_main
+            print("Patched main.py main function")
+    except Exception as e:
+        print(f"Error patching main.py: {e}")
+""")
+
+    print("Patch files created successfully!")
+    return True
+
+# Manual replacement function for direct use in scripts
+def replace_tts_in_pipeline(pipeline):
+    """
+    Replace the TTS component in an existing pipeline instance.
+    
+    Args:
+        pipeline: RealTimeTranslationPipeline instance
+        
+    Returns:
+        bool: True if successful
+    """
+    try:
+        # Import the EnhancedStreamingTTS
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        from enhanced_tts import EnhancedStreamingTTS
+        
+        # Get old TTS parameters
+        old_tts = pipeline.tts
+        device = old_tts.device if hasattr(old_tts, 'device') else None
+        language = old_tts.language_code if hasattr(old_tts, 'language_code') else "eng"
+        
+        # Create new TTS
+        new_tts = EnhancedStreamingTTS(device=device)
+        new_tts.set_language(language)
+        
+        # Replace in pipeline
+        pipeline.tts = new_tts
+        
+        print(f"Pipeline TTS replaced with EnhancedStreamingTTS ({language})")
+        return True
+    except Exception as e:
+        print(f"Error replacing TTS in pipeline: {e}")
+        return False
+
+# Simple usage example
+if __name__ == "__main__":
+    patch_pipeline()
+    print("Pipeline patch applied!")

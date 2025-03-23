@@ -11,18 +11,17 @@ logging.basicConfig(level=logging.INFO,
                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('TTS')
 
-class StreamingTTS:
+class EnhancedStreamingTTS:
     """
-    Real-time streaming Text-to-Speech synthesis using VITS.
+    Improved real-time streaming Text-to-Speech synthesis using MMS-TTS.
     
-    This class implements incremental speech synthesis, generating
-    audio for text fragments as they arrive from the translation system
-    and allowing for immediate playback.
+    This class addresses compatibility issues with the translation pipeline
+    and provides better error handling and diagnostics.
     """
     
     def __init__(self, device=None, model_name="facebook/mms-tts-eng"):
         """
-        Initialize the streaming TTS component with VITS model.
+        Initialize the streaming TTS component with MMS-TTS model.
         
         Args:
             device: Computation device ('cuda' or 'cpu')
