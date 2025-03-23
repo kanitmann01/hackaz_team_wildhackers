@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>P2P Translation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            padding: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .chat-box {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            max-width: 75%;
+            word-break: break-word;
+        }
+
+        .message.sent {
+            background-color: #e3f2fd;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message.received {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+        }
+
+        .message .translation {
+            margin-top: 0.25rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            padding: 1rem;
+            background-color: #f1f1f1;
+            align-items: center;
+        }
+
+        .mic-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mic-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .mic-button.recording {
+            background: linear-gradient(135deg, #ff5e62, #ff9966);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 94, 98, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 94, 98, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 94, 98, 0);
+            }
+        }
+
+        .setup-screen, .join-screen, .create-screen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+            border-radius: 10px;
+        }
+
+        .language-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-left: 0.5rem;
+        }
+
+        .session-info {
+            background-color: #e9ecef;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-dot.connected {
+            background-color: #28a745;
+        }
+
+        .status-dot.disconnected {
+            background-color: #dc3545;
+        }
+
+        .share-link {
+            font-size: 0.8rem;
+            word-break: break-all;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Initial Setup Screen -->
+    <div id="setup-screen" class="setup-screen container">
+        <div class="card p-4">
+            <h2 class="text-center mb-4">P2P Translation</h2>
+            <div class="d-grid gap-3">
+                <button id="create-button" class="btn btn-primary btn-lg">Create New Conversation</button>
+                <button id="join-button" class="btn btn-outline-primary btn-lg">Join Conversation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Conversation Screen -->
+    <div id="create-screen" class="create-screen container" style="display: none;">
+        <div class="card p-4">
+            <h2 class="text-center mb-4">Create Conversation</h2>
+            <form id="create-form">
+                <div class="mb-3">
+                    <label for="your-language" class="form-label">Your Language</label>
+                    <select id="your-language" class="form-select" required>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="their-language" class="form-label">Their Language</label>
+                    <select id="their-language" class="form-select" required>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="button" id="back-from-create" class="btn btn-outline-secondary">Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Join Conversation Screen -->
+    <div id="join-screen" class="join-screen container" style="display: none;">
+        <div class="card p-4">
+            <h2 class="text-center mb-4">Join Conversation</h2>
+            <form id="join-form">
+                <div class="mb-3">
+                    <label for="session-id" class="form-label">Conversation Code</label>
+                    <input type="text" id="session-id" class="form-control form-control-lg text-center" placeholder="Enter code" required>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="position" id="position-1" value="1" checked>
+                        <label class="form-check-label" for="position-1">Position 1</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="position" id="position-2" value="2">
+                        <label class="form-check-label" for="position-2">Position 2</label>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Join</button>
+                    <button type="button" id="back-from-join" class="btn btn-outline-secondary">Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Translation Screen -->
+    <div id="translation-screen" style="display: none; height: 100%;">
+        <div class="header">
+            <h2>P2P Translation</h2>
+            <div class="session-info">
+                <span id="session-id-display"></span>
+                <div>
+                    <span class="status-dot disconnected" id="other-user-status"></span>
+                    <span id="other-user-status-text">Waiting for other user...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="chat-box">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages will appear here -->
+                </div>
+                <div class="controls">
+                    <button id="mic-button" class="mic-button">
+                        <i class="bi bi-mic-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="share-link mt-3" id="share-link-container" style="display: none;">
+                <div class="mb-2"><strong>Share this link with your conversation partner:</strong></div>
+                <div id="share-link" class="text-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css"></script>
+    
+    <script>
+        // State variables
+        let socket;
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let sessionId = null;
+        let userId = null;
+        let userPosition = null;
+        
+        // DOM Elements
+        const setupScreen = document.getElementById('setup-screen');
+        const createScreen = document.getElementById('create-screen');
+        const joinScreen = document.getElementById('join-screen');
+        const translationScreen = document.getElementById('translation-screen');
+        
+        const createButton = document.getElementById('create-button');
+        const joinButton = document.getElementById('join-button');
+        const backFromCreateButton = document.getElementById('back-from-create');
+        const backFromJoinButton = document.getElementById('back-from-join');
+        
+        const createForm = document.getElementById('create-form');
+        const joinForm = document.getElementById('join-form');
+        
+        const yourLanguageSelect = document.getElementById('your-language');
+        const theirLanguageSelect = document.getElementById('their-language');
+        const sessionIdInput = document.getElementById('session-id');
+        
+        const micButton = document.getElementById('mic-button');
+        const chatMessages = document.getElementById('chat-messages');
+        
+        const sessionIdDisplay = document.getElementById('session-id-display');
+        const otherUserStatus = document.getElementById('other-user-status');
+        const otherUserStatusText = document.getElementById('other-user-status-text');
+        
+        const shareLinkContainer = document.getElementById('share-link-container');
+        const shareLinkElement = document.getElementById('share-link');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load languages
+            fetchLanguages();
+            
+            // Set up event listeners
+            createButton.addEventListener('click', () => showScreen(createScreen));
+            joinButton.addEventListener('click', () => showScreen(joinScreen));
+            backFromCreateButton.addEventListener('click', () => showScreen(setupScreen));
+            backFromJoinButton.addEventListener('click', () => showScreen(setupScreen));
+            
+            createForm.addEventListener('submit', handleCreateForm);
+            joinForm.addEventListener('submit', handleJoinForm);
+            
+            micButton.addEventListener('mousedown', startRecording);
+            micButton.addEventListener('mouseup', stopRecording);
+            micButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startRecording();
+            });
+            micButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                stopRecording();
+            });
+            
+            // Initialize socket connection
+            initSocket();
+        });
+        
+        // Helper Functions
+        function showScreen(screen) {
+            setupScreen.style.display = 'none';
+            createScreen.style.display = 'none';
+            joinScreen.style.display = 'none';
+            translationScreen.style.display = 'none';
+            
+            screen.style.display = 'flex';
+        }
+        
+        async function fetchLanguages() {
+            try {
+                const response = await fetch('/languages');
+                const languages = await response.json();
+                
+                // Populate language selects
+                for (const [code, name] of Object.entries(languages)) {
+                    const option1 = document.createElement('option');
+                    option1.value = code;
+                    option1.textContent = name;
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = code;
+                    option2.textContent = name;
+                    
+                    yourLanguageSelect.appendChild(option1);
+                    theirLanguageSelect.appendChild(option2);
+                }
+                
+                // Default to English for user, Spanish for other
+                yourLanguageSelect.value = 'en';
+                theirLanguageSelect.value = 'es';
+            } catch (error) {
+                console.error('Error fetching languages:', error);
+                alert('Failed to load languages. Please refresh the page.');
+            }
+        }
+        
+        function initSocket() {
+            // Initialize Socket.IO connection
+            socket = io();
+            
+            // Set up event handlers
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+            
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+            });
+            
+            socket.on('joined', (data) => {
+                console.log('Joined session:', data);
+                
+                if (data.other_user_connected) {
+                    otherUserStatus.classList.remove('disconnected');
+                    otherUserStatus.classList.add('connected');
+                    otherUserStatusText.textContent = 'Other user connected';
+                }
+            });
+            
+            socket.on('user_joined', (data) => {
+                console.log('Other user joined:', data);
+                otherUserStatus.classList.remove('disconnected');
+                otherUserStatus.classList.add('connected');
+                otherUserStatusText.textContent = 'Other user connected';
+            });
+            
+            socket.on('text_update', (data) => {
+                console.log('Text update:', data);
+                updateChatMessages(data);
+            });
+            
+            socket.on('audio_update', (data) => {
+                console.log('Audio update received');
+                playAudio(data.audio);
+            });
+            
+            socket.on('error', (data) => {
+                console.error('Socket error:', data.message);
+                alert('Error: ' + data.message);
+            });
+        }
+        
+        async function handleCreateForm(e) {
+            e.preventDefault();
+            
+            const user1Lang = yourLanguageSelect.value;
+            const user2Lang = theirLanguageSelect.value;
+            
+            try {
+                const response = await fetch('/create-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user1_lang: user1Lang, user2_lang: user2Lang })
+                });
+                
+                const data = await response.json();
+                sessionId = data.session_id;
+                
+                // Join as user 1
+                joinSession(sessionId, 1);
+            } catch (error) {
+                console.error('Error creating session:', error);
+                alert('Failed to create session. Please try again.');
+            }
+        }
+        
+        async function handleJoinForm(e) {
+            e.preventDefault();
+            
+            const session = sessionIdInput.value.trim();
+            const position = document.querySelector('input[name="position"]:checked').value;
+            
+            if (!session) {
+                alert('Please enter a conversation code');
+                return;
+            }
+            
+            joinSession(session, parseInt(position));
+        }
+        
+        async function joinSession(session, position) {
+            try {
+                const response = await fetch(`/join-session/${session}/${position}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    sessionId = data.session_id;
+                    userId = data.user_id;
+                    userPosition = data.position;
+                    
+                    // Show translation screen
+                    showScreen(translationScreen);
+                    
+                    // Update UI
+                    sessionIdDisplay.textContent = `Conversation Code: ${sessionId}`;
+                    
+                    // Show share link
+                    const shareUrl = `${window.location.origin}?session=${sessionId}&position=${userPosition === 1 ? 2 : 1}`;
+                    shareLinkElement.textContent = shareUrl;
+                    shareLinkContainer.style.display = 'block';
+                    
+                    // Join socket room
+                    socket.emit('join', { session_id: sessionId, user_id: userId });
+                    
+                    // Check URL params for auto-join
+                    checkUrlParams();
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                console.error('Error joining session:', error);
+                alert('Failed to join session. Please try again.');
+            }
+        }
+        
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const session = urlParams.get('session');
+            const position = urlParams.get('position');
+            
+            if (session && position) {
+                // Auto-fill join form
+                sessionIdInput.value = session;
+                document.getElementById(`position-${position}`).checked = true;
+                
+                // Show join screen if we're not already in a session
+                if (!sessionId) {
+                    showScreen(joinScreen);
+                }
+            }
+        }
+        
+        async function startRecording() {
+            if (isRecording || !sessionId || !userId) return;
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.addEventListener('dataavailable', event => {
+                    audioChunks.push(event.data);
+                });
+                
+                mediaRecorder.addEventListener('stop', () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    processAudioBlob(audioBlob);
+                });
+                
+                // Start recording
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI
+                micButton.classList.add('recording');
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                alert('Failed to access microphone. Please ensure your browser has permission to use the microphone.');
+            }
+        }
+        
+        function stopRecording() {
+            if (!isRecording || !mediaRecorder) return;
+            
+            // Stop recording
+            mediaRecorder.stop();
+            isRecording = false;
+            
+            // Update UI
+            micButton.classList.remove('recording');
+        }
+        
+        async function processAudioBlob(blob) {
+            try {
+                // Convert blob to float32 array
+                const arrayBuffer = await blob.arrayBuffer();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+                    // Convert to mono if needed
+                    const audio = buffer.getChannelData(0);
+                    
+                    // Convert to base64
+                    const audioB64 = arrayBufferToBase64(audio.buffer);
+                    
+                    // Send to server
+                    socket.emit('audio', {
+                        session_id: sessionId,
+                        user_id: userId,
+                        audio: audioB64
+                    });
+                }, (error) => {
+                    console.error('Error decoding audio:', error);
+                });
+            } catch (error) {
+                console.error('Error processing audio:', error);
+            }
+        }
+        
+        function arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            
+            return window.btoa(binary);
+        }
+        
+        function updateChatMessages(data) {
+            if (data.type === 'source') {
+                // Update source text (my message)
+                const existingMessage = document.querySelector('.message.sent');
+                
+                if (existingMessage) {
+                    const sourceElement = existingMessage.querySelector('.source');
+                    sourceElement.textContent = data.text;
+                } else {
+                    // Create new message
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message sent';
+                    
+                    const sourceElement = document.createElement('div');
+                    sourceElement.className = 'source';
+                    sourceElement.textContent = data.text;
+                    
+                    messageElement.appendChild(sourceElement);
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            } else if (data.type === 'translation') {
+                // Update translation text (their message)
+                const existingMessage = document.querySelector('.message.received');
+                
+                if (existingMessage) {
+                    const translationElement = existingMessage.querySelector('.translation');
+                    translationElement.textContent = data.text;
+                } else {
+                    // Create new message
+                    const messageElement = document.createElement('div');
+                    messageElement.className = 'message received';
+                    
+                    const translationElement = document.createElement('div');
+                    translationElement.className = 'translation';
+                    translationElement.textContent = data.text;
+                    
+                    messageElement.appendChild(translationElement);
+                    chatMessages.appendChild(messageElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        }
+        
+        function playAudio(audioB64) {
+            if (!audioB64) return;
+            
+            try {
+                // Decode base64 audio
+                const binaryString = window.atob(audioB64);
+                const bytes = new Uint8Array(binaryString.length);
+                
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                // Create audio context
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Convert to audio buffer
+                const audioBuffer = new Int16Array(bytes.buffer);
+                const floatBuffer = new Float32Array(audioBuffer.length);
+                
+                // Convert Int16 to Float32
+                for (let i = 0; i < audioBuffer.length; i++) {
+                    floatBuffer[i] = audioBuffer[i] / 32767.0;
+                }
+                
+                // Create buffer source
+                const bufferSource = audioContext.createBuffer(1, floatBuffer.length, 16000);
+                bufferSource.getChannelData(0).set(floatBuffer);
+                
+                // Play audio
+                const source = audioContext.createBufferSource();
+                source.buffer = bufferSource;
+                source.connect(audioContext.destination);
+                source.start();
+            } catch (error) {
+                console.error('Error playing audio:', error);
+            }
+        }
+    </script>
+</body>
+</html>
