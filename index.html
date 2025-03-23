@@ -158,7 +158,7 @@
             position: relative;
             overflow: hidden;
             padding: 3rem;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1E3A8A 100%);
+            background: linear-gradient(135deg, #FFF7F0 0%, #FFF1E6 50%, #FFEDD5 100%);
         }
 
         .hero-left::before {
@@ -221,6 +221,24 @@
             transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        /* Breathing animation for language text */
+        @keyframes breathing {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
         .language-bar::after {
             content: attr(data-lang);
             position: absolute;
@@ -233,6 +251,7 @@
 
         .language-bar.show-label::after {
             opacity: 1;
+            animation: breathing 4s ease-in-out infinite;
         }
 
         .lang-box {
@@ -286,7 +305,7 @@
             width: 3px;
             height: 100%;
             margin: 0 2px;
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.2);
             animation: sound 1.5s linear infinite alternate;
         }
 
@@ -391,7 +410,7 @@
             position: absolute;
             width: 300px;
             height: 300px;
-            border: 1px dashed rgba(158, 140, 255, 0.2);
+            border: 1px dashed rgba(251, 191, 36, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -404,7 +423,7 @@
             position: absolute;
             width: 200px;
             height: 200px;
-            border: 1px dashed rgba(158, 140, 255, 0.2);
+            border: 1px dashed rgba(251, 191, 36, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -416,7 +435,7 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 1px dashed rgba(158, 140, 255, 0.2);
+            border: 1px dashed rgba(251, 191, 36, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -755,7 +774,7 @@
                                     <h3 class="h4 mb-3 text-secondary-custom">Bridge language gaps on campus</h3>
                                     <p class="mb-4">VoiceBridge helps UofA students communicate across language
                                         barriers, facilitating cultural exchange and academic collaboration.</p>
-                                    <a href="https://bit.ly/voice_bridge"
+                                    <a href="https://bit.ly/voice_bridge" target="_blank"
                                         class="btn btn-primary-custom btn-lg px-5 py-3 launch-btn">
                                         <i class="fas fa-rocket me-2"></i> Launch Demo
                                     </a>
@@ -1020,16 +1039,12 @@
                     }
                 }, 500);
 
-                // Set up demo button
+                // Set up demo button functionality if needed in the future
                 try {
                     const demoButton = document.querySelector('.launch-btn');
-                    if (demoButton) {
-                        demoButton.addEventListener('click', function () {
-                            alert('This button will be connected to your local demo server.');
-                        });
-                    }
+                    // Button now uses href with target="_blank"
                 } catch (buttonError) {
-                    console.log('Note: Demo button could not be set up');
+                    console.log('Note: Could not set up demo button');
                 }
 
                 // Create floating particles
@@ -1044,7 +1059,7 @@
                             const size = Math.random() * 6 + 2;
                             const posX = Math.random() * 100;
                             const posY = Math.random() * 100;
-                            const color = Math.random() > 0.5 ? 'rgba(54, 191, 250, 0.3)' : 'rgba(158, 140, 255, 0.3)';
+                            const color = Math.random() > 0.5 ? 'rgba(251, 146, 60, 0.2)' : 'rgba(251, 191, 36, 0.2)';
 
                             particle.style.width = `${size}px`;
                             particle.style.height = `${size}px`;
