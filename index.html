@@ -5,6 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoiceBridge - Real-time Speech Translation | University of Arizona</title>
+    
+    <!-- SEO and Sharing Meta Tags -->
+    <meta name="description" content="VoiceBridge - Breaking language barriers at the University of Arizona through real-time AI-powered speech translation technology.">
+    <meta name="keywords" content="translation, AI, speech recognition, University of Arizona, language barriers">
+    <meta property="og:title" content="VoiceBridge - Real-time Speech Translation">
+    <meta property="og:description" content="Breaking language barriers at UofA through AI-powered real-time translation.">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:url" content="https://voicebridge.tech">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- Preconnects for faster resource loading -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="logo.png" as="image">
+    <link rel="preload" href="students.jpg" as="image">
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -13,6 +38,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- Custom styling -->
     <style>
         :root {
@@ -32,6 +60,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
             overflow-x: hidden;
             background-color: #f9f9f9;
+            scroll-behavior: smooth;
         }
 
         /* Custom classes to extend Bootstrap */
@@ -51,18 +80,41 @@
             color: var(--secondary) !important;
         }
 
+        /* Enhanced Button Animation */
         .btn-primary-custom {
             background: linear-gradient(to right, var(--primary), var(--accent));
             border: none;
             color: white;
             box-shadow: 0 4px 15px rgba(54, 191, 250, 0.25);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(54, 191, 250, 0.35);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(54, 191, 250, 0.4);
             color: white;
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 3px 10px rgba(54, 191, 250, 0.3);
+        }
+
+        .btn-primary-custom::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .btn-primary-custom:hover::after {
+            left: 100%;
         }
 
         .btn-secondary-custom {
@@ -70,13 +122,34 @@
             border: none;
             color: white;
             box-shadow: 0 4px 15px rgba(12, 35, 75, 0.25);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-secondary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(12, 35, 75, 0.35);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(12, 35, 75, 0.4);
             color: white;
+        }
+
+        .btn-secondary-custom:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-secondary-custom::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s;
+        }
+
+        .btn-secondary-custom:hover::after {
+            left: 100%;
         }
 
         /* Logo styling */
@@ -120,10 +193,18 @@
             z-index: 0;
         }
 
+        /* Enhanced particle styling */
         .particle {
             position: absolute;
             border-radius: 50%;
             opacity: 0.3;
+            filter: blur(1px);
+            transition: opacity 0.5s ease, filter 0.5s ease;
+        }
+
+        .particle:hover {
+            opacity: 0.6;
+            filter: blur(0);
         }
 
         /* UofA branding elements */
@@ -146,19 +227,24 @@
             width: 100%;
         }
 
-        /* Hero content */
+        /* Hero content with parallax effect */
         .hero-left {
             position: relative;
             z-index: 1;
             padding: 5rem 2rem;
             background: linear-gradient(120deg, var(--light-bg) 0%, #E0F2FE 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease-out;
         }
 
+        /* Changed hero-right background from orangish to blue */
         .hero-right {
             position: relative;
             overflow: hidden;
             padding: 3rem;
-            background: linear-gradient(135deg, #FFF7F0 0%, #FFF1E6 50%, #FFEDD5 100%);
+            background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%); /* Blue gradient */
+            transition: transform 0.3s ease-out;
         }
 
         .hero-left::before {
@@ -176,12 +262,15 @@
             font-weight: 800;
             line-height: 1.1;
             position: relative;
+            letter-spacing: -0.01em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .hero-title .highlight {
             color: var(--primary);
             position: relative;
             display: inline-block;
+            transition: color 0.3s ease;
         }
 
         .hero-title .highlight::after {
@@ -194,9 +283,20 @@
             left: 0;
             z-index: -1;
             border-radius: 4px;
+            transition: all 0.5s ease;
         }
 
-        /* Language Bars */
+        .hero-title .highlight:hover {
+            color: var(--accent);
+        }
+
+        .hero-title .highlight:hover::after {
+            background-color: rgba(158, 140, 255, 0.2);
+            height: 10px;
+            bottom: 5px;
+        }
+
+        /* Language Bars with improved animation */
         .language-bars {
             width: 100%;
             max-width: 450px;
@@ -208,7 +308,6 @@
         .language-bar {
             height: 60px;
             width: 0%;
-            /* Start at 0 for animation */
             border-radius: 10px;
             margin-bottom: 28px;
             display: flex;
@@ -218,7 +317,36 @@
             font-weight: 700;
             position: relative;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: width 1.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s ease, opacity 0.5s ease;
+            transform: scale(0.95);
+            opacity: 0.9;
+        }
+
+        .language-bar.show-width {
+            width: var(--target-width);
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Sunset-themed Language Bars */
+        .bar-1 {
+            background: linear-gradient(to right, #FF9966, #FF5E62); /* Warm orange to coral */
+        }
+
+        .bar-2 {
+            background: linear-gradient(to right, #FF5E62, #FF3131); /* Coral to sunset red */
+        }
+
+        .bar-3 {
+            background: linear-gradient(to right, #FF3131, #D4418E); /* Sunset red to pink */
+        }
+
+        .bar-4 {
+            background: linear-gradient(to right, #D4418E, #B721FF); /* Pink to purple */
+        }
+
+        .bar-5 {
+            background: linear-gradient(to right, #B721FF, #8A2BE2); /* Purple to deep violet */
         }
 
         /* Breathing animation for language text */
@@ -266,27 +394,13 @@
             margin-right: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            transform: scale(0.8);
         }
 
-        .bar-1 {
-            background: linear-gradient(to right, #36BFFA, #0EA5E9);
-        }
-
-        .bar-2 {
-            background: linear-gradient(to right, #38BDF8, #0284C7);
-        }
-
-        .bar-3 {
-            background: linear-gradient(to right, #7DD3FC, #0369A1);
-        }
-
-        .bar-4 {
-            background: linear-gradient(to right, #BAE6FD, #0284C7);
-        }
-
-        .bar-5 {
-            background: linear-gradient(to right, #7C3AED, #8B5CF6);
+        .language-bar.show-width .lang-box {
+            opacity: 1;
+            transform: scale(1);
         }
 
         /* AI animation elements */
@@ -410,7 +524,7 @@
             position: absolute;
             width: 300px;
             height: 300px;
-            border: 1px dashed rgba(251, 191, 36, 0.2);
+            border: 1px dashed rgba(54, 191, 250, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -423,7 +537,7 @@
             position: absolute;
             width: 200px;
             height: 200px;
-            border: 1px dashed rgba(251, 191, 36, 0.2);
+            border: 1px dashed rgba(54, 191, 250, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
@@ -435,19 +549,19 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 1px dashed rgba(251, 191, 36, 0.2);
+            border: 1px dashed rgba(54, 191, 250, 0.2);
             border-radius: 50%;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        /* Step cards */
+        /* Enhanced Step cards */
         .step-card {
             border-radius: 1rem;
             border: none;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease;
             height: 100%;
             position: relative;
             overflow: hidden;
@@ -467,8 +581,8 @@
         }
 
         .step-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         .step-number {
@@ -486,6 +600,12 @@
             box-shadow: 0 4px 10px rgba(158, 140, 255, 0.3);
             position: relative;
             z-index: 1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step-card:hover .step-number {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(158, 140, 255, 0.4);
         }
 
         /* Language tags */
@@ -497,15 +617,15 @@
             display: inline-block;
             margin: 0.35rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .language-tag:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
         }
 
-        /* Demo section */
+        /* Demo section with improved button */
         .launch-btn {
             position: relative;
             overflow: hidden;
@@ -526,6 +646,36 @@
                     rgba(255, 255, 255, 0) 20px);
             animation: slidingStripes 20s linear infinite;
             z-index: -1;
+        }
+
+        /* External link indicator */
+        .external-link-indicator::after {
+            content: "↗";
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+
+        .external-link-indicator:hover::after {
+            transform: translate(2px, -2px);
+        }
+
+        /* Demo button pulse animation */
+        @keyframes subtle-pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(54, 191, 250, 0.25);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(54, 191, 250, 0.4);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(54, 191, 250, 0.25);
+            }
+        }
+
+        .launch-btn {
+            animation: subtle-pulse 3s infinite;
         }
 
         @keyframes slidingStripes {
@@ -563,35 +713,6 @@
             }
         }
 
-        /* Testimonial section */
-        .testimonial-card {
-            border-radius: 1rem;
-            border: none;
-            background-color: white;
-            position: relative;
-            padding: 2rem;
-            margin-top: 2.5rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-
-        .testimonial-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .testimonial-quote {
-            font-style: italic;
-            margin-top: 2rem;
-        }
-
         /* Footer */
         .footer-social-link {
             display: inline-flex;
@@ -603,13 +724,15 @@
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
             margin: 0 5px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
         }
 
         .footer-social-link:hover {
             background-color: var(--accent);
             color: var(--secondary);
-            transform: translateY(-3px);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(158, 140, 255, 0.3);
         }
 
         /* University styling */
@@ -631,6 +754,86 @@
         .small-logo {
             max-width: 60px;
             height: auto;
+        }
+
+        /* Back to top button */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 15px rgba(54, 191, 250, 0.3);
+            z-index: 1000;
+        }
+
+        #back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(54, 191, 250, 0.4);
+        }
+
+        #back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Fix for text visibility */
+        .text-secondary-custom {
+            color: var(--secondary) !important;
+        }
+
+        .text-secondary-custom.opacity-75 {
+            opacity: 0.9 !important;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .step-card {
+                margin-bottom: 15px;
+            }
+            
+            .wave-animation {
+                height: 30px;
+            }
+            
+            .wave-bar {
+                width: 2px;
+                margin: 0 1px;
+            }
+
+            #back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* Ultra-wide screen optimization */
+        @media (min-width: 2000px) {
+            .hero-split {
+                max-width: 2000px;
+                margin: 0 auto;
+            }
+            
+            .container {
+                max-width: 1400px;
+            }
         }
     </style>
 </head>
@@ -654,8 +857,6 @@
             <!-- Circuit pattern for tech feel -->
             <div class="circuit-pattern"></div>
 
-
-
             <div class="container position-relative">
                 <div class="py-2 mb-4">
                     <div class="logo-container">
@@ -665,7 +866,7 @@
 
                 <div data-aos="fade-up" data-aos-duration="800">
                     <h2 class="hero-title display-3 mb-4 text-secondary-custom">
-                        Breaking <span class="highlight">language</span> barriers at UofA.
+                        Breaking <span class="highlight" data-aos="zoom-in" data-aos-delay="500">language</span> barriers at UofA.
                     </h2>
                     <h3 class="h4 fw-normal mb-3 text-secondary-custom opacity-75 typing-animation">
                         Real-time speech translation prototype
@@ -772,10 +973,10 @@
                                 </div>
                                 <div class="col-md-6 text-start">
                                     <h3 class="h4 mb-3 text-secondary-custom">Bridge language gaps on campus</h3>
-                                    <p class="mb-4">VoiceBridge helps UofA students communicate across language
+                                    <p class="mb-4 text-secondary-custom opacity-90">VoiceBridge helps UofA students communicate across language
                                         barriers, facilitating cultural exchange and academic collaboration.</p>
                                     <a href="https://bit.ly/voice_bridge" target="_blank"
-                                        class="btn btn-primary-custom btn-lg px-5 py-3 launch-btn">
+                                        class="btn btn-primary-custom btn-lg px-5 py-3 launch-btn external-link-indicator">
                                         <i class="fas fa-rocket me-2"></i> Launch Demo
                                     </a>
                                 </div>
@@ -795,7 +996,7 @@
                     <h2 class="display-5 fw-bold mb-3 text-secondary-custom section-title-border">
                         How It Works
                     </h2>
-                    <p class="lead mb-4 text-secondary-custom opacity-75">
+                    <p class="lead mb-4 text-secondary-custom opacity-90">
                         Our technology uses state-of-the-art AI to enable seamless communication across languages.
                     </p>
                 </div>
@@ -807,12 +1008,12 @@
                         <div class="card-body">
                             <div class="step-number animate__animated animate__bounce animate__delay-1s">1</div>
                             <h3 class="h4 fw-bold mb-3 text-secondary-custom">Speech Recognition</h3>
-                            <p class="text-secondary-custom opacity-75">
+                            <p class="text-secondary-custom opacity-90">
                                 Whisper ASR technology converts spoken words to text with high accuracy, even in noisy
                                 environments.
                             </p>
                             <div class="mt-3">
-                                <i class="fas fa-microphone fa-2x text-primary-custom opacity-50"></i>
+                                <i class="fas fa-microphone fa-2x text-primary-custom opacity-80"></i>
                             </div>
                         </div>
                     </div>
@@ -823,12 +1024,12 @@
                         <div class="card-body">
                             <div class="step-number animate__animated animate__bounce animate__delay-2s">2</div>
                             <h3 class="h4 fw-bold mb-3 text-secondary-custom">Translation</h3>
-                            <p class="text-secondary-custom opacity-75">
+                            <p class="text-secondary-custom opacity-90">
                                 NLLB-200 model instantly translates text to the target language with contextual
                                 understanding.
                             </p>
                             <div class="mt-3">
-                                <i class="fas fa-language fa-2x text-primary-custom opacity-50"></i>
+                                <i class="fas fa-language fa-2x text-primary-custom opacity-80"></i>
                             </div>
                         </div>
                     </div>
@@ -839,12 +1040,12 @@
                         <div class="card-body">
                             <div class="step-number animate__animated animate__bounce animate__delay-3s">3</div>
                             <h3 class="h4 fw-bold mb-3 text-secondary-custom">Speech Synthesis</h3>
-                            <p class="text-secondary-custom opacity-75">
+                            <p class="text-secondary-custom opacity-90">
                                 MMS-TTS technology converts translated text to natural-sounding speech in the target
                                 language.
                             </p>
                             <div class="mt-3">
-                                <i class="fas fa-volume-up fa-2x text-primary-custom opacity-50"></i>
+                                <i class="fas fa-volume-up fa-2x text-primary-custom opacity-80"></i>
                             </div>
                         </div>
                     </div>
@@ -860,7 +1061,7 @@
                     <h2 class="display-5 fw-bold mb-3 text-secondary-custom section-title-border">
                         Technology Stack
                     </h2>
-                    <p class="mb-0 text-secondary-custom opacity-75">
+                    <p class="mb-0 text-secondary-custom opacity-90">
                         Powered by cutting-edge AI models
                     </p>
                 </div>
@@ -872,10 +1073,10 @@
                         style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
                         <div class="card-body text-center p-4">
                             <div class="mb-3">
-                                <i class="fas fa-microphone fa-3x text-primary-custom opacity-75"></i>
+                                <i class="fas fa-microphone fa-3x text-primary-custom opacity-80"></i>
                             </div>
-                            <h4 class="card-title mb-3">Whisper ASR</h4>
-                            <p class="card-text text-secondary-custom opacity-75">
+                            <h4 class="card-title mb-3 text-secondary-custom">Whisper ASR</h4>
+                            <p class="card-text text-secondary-custom opacity-90">
                                 State-of-the-art speech recognition with multilingual support
                             </p>
                         </div>
@@ -887,10 +1088,10 @@
                         style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
                         <div class="card-body text-center p-4">
                             <div class="mb-3">
-                                <i class="fas fa-language fa-3x text-primary-custom opacity-75"></i>
+                                <i class="fas fa-language fa-3x text-primary-custom opacity-80"></i>
                             </div>
-                            <h4 class="card-title mb-3">NLLB-200</h4>
-                            <p class="card-text text-secondary-custom opacity-75">
+                            <h4 class="card-title mb-3 text-secondary-custom">NLLB-200</h4>
+                            <p class="card-text text-secondary-custom opacity-90">
                                 Neural machine translation covering 200+ languages with high accuracy
                             </p>
                         </div>
@@ -902,10 +1103,10 @@
                         style="background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);">
                         <div class="card-body text-center p-4">
                             <div class="mb-3">
-                                <i class="fas fa-volume-up fa-3x text-primary-custom opacity-75"></i>
+                                <i class="fas fa-volume-up fa-3x text-primary-custom opacity-80"></i>
                             </div>
-                            <h4 class="card-title mb-3">MMS-TTS</h4>
-                            <p class="card-text text-secondary-custom opacity-75">
+                            <h4 class="card-title mb-3 text-secondary-custom">MMS-TTS</h4>
+                            <p class="card-text text-secondary-custom opacity-90">
                                 Multilingual speech synthesis for natural-sounding output
                             </p>
                         </div>
@@ -958,31 +1159,39 @@
         </div>
     </footer>
 
+    <!-- Back to Top Button -->
+    <div id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AOS Animation JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
     <script>
-        // Initialize AOS animations
+        // Enhanced animation and interaction code
         document.addEventListener('DOMContentLoaded', function () {
             try {
-                // Initialize AOS
+                // Initialize AOS with improved settings
                 AOS.init({
                     duration: 800,
-                    once: true
+                    once: false,                // Changed to false to allow animations to repeat on scroll
+                    mirror: true,               // Mirror animations when scrolling up
+                    anchorPlacement: 'top-bottom', // Animate when the element enters the viewport
+                    easing: 'ease-out-cubic'    // Smoother easing function
                 });
 
-                // Animate language bars on page load with defensive programming
+                // Enhanced language bars animation with requestAnimationFrame
                 setTimeout(function () {
                     try {
                         // Get all language bar elements
                         const languageBars = document.querySelectorAll('.language-bar');
-
+                        
                         // If no bars found, exit gracefully
                         if (!languageBars || languageBars.length === 0) return;
-
-                        // Set the bar widths using classes
+                        
+                        // Set target widths for each bar
                         const widths = {
                             'bar-1': '85%',
                             'bar-2': '90%',
@@ -990,164 +1199,279 @@
                             'bar-4': '88%',
                             'bar-5': '82%'
                         };
-
-                        // Animate each bar with proper error handling
+                        
+                        // Animate each bar with improved staggering
                         languageBars.forEach(function (bar, index) {
                             if (!bar) return; // Skip if bar is null
-
+                            
+                            // Set CSS variable for target width
+                            const barClass = Array.from(bar.classList).find(cls => cls.startsWith('bar-'));
+                            if (barClass && widths[barClass]) {
+                                bar.style.setProperty('--target-width', widths[barClass]);
+                            } else {
+                                bar.style.setProperty('--target-width', '80%');
+                            }
+                            
+                            // Use setTimeout for staggered animation starts
                             setTimeout(function () {
-                                try {
-                                    // Find the corresponding width for this bar
-                                    let width = '80%'; // Default width
-
-                                    // Determine the correct width based on class
-                                    Object.keys(widths).forEach(function (className) {
-                                        if (bar.classList.contains(className)) {
-                                            width = widths[className];
-                                        }
-                                    });
-
-                                    // Apply the width
-                                    bar.style.width = width;
-
-                                    // Fade in the lang box if it exists
-                                    try {
-                                        const langBox = bar.querySelector('.lang-box');
-                                        if (langBox) {
-                                            langBox.style.opacity = '1';
-                                        }
-                                    } catch (innerError) {
-                                        console.log('Note: Could not animate language box');
-                                    }
-
+                                requestAnimationFrame(function() {
+                                    // Add class to trigger width animation
+                                    bar.classList.add('show-width');
+                                    
                                     // Add the show-label class after a delay
                                     setTimeout(function () {
-                                        try {
-                                            bar.classList.add('show-label');
-                                        } catch (labelError) {
-                                            console.log('Note: Could not show label');
-                                        }
-                                    }, 500);
-
-                                } catch (barError) {
-                                    console.log('Note: Error animating a language bar');
-                                }
-                            }, index * 200); // Stagger animations
+                                        bar.classList.add('show-label');
+                                    }, 600);
+                                });
+                            }, index * 300); // Staggered delay
                         });
                     } catch (animationError) {
-                        console.log('Note: Animation could not be completed');
+                        console.log('Note: Animation could not be completed', animationError);
                     }
-                }, 500);
+                }, 800);
 
-                // Set up demo button functionality if needed in the future
-                try {
-                    const demoButton = document.querySelector('.launch-btn');
-                    // Button now uses href with target="_blank"
-                } catch (buttonError) {
-                    console.log('Note: Could not set up demo button');
-                }
-
-                // Create floating particles
-                try {
-                    const particlesContainer = document.getElementById('particles-container');
-                    if (particlesContainer) {
-                        for (let i = 0; i < 30; i++) {
-                            const particle = document.createElement('div');
-                            particle.classList.add('particle');
-
-                            // Random size, position, and color
-                            const size = Math.random() * 6 + 2;
-                            const posX = Math.random() * 100;
-                            const posY = Math.random() * 100;
-                            const color = Math.random() > 0.5 ? 'rgba(251, 146, 60, 0.2)' : 'rgba(251, 191, 36, 0.2)';
-
-                            particle.style.width = `${size}px`;
-                            particle.style.height = `${size}px`;
-                            particle.style.left = `${posX}%`;
-                            particle.style.top = `${posY}%`;
-                            particle.style.backgroundColor = color;
-
-                            // Random floating animation
-                            const animDuration = Math.random() * 20 + 10;
-                            const animDelay = Math.random() * 5;
-
-                            particle.style.animation = `float ${animDuration}s ease-in-out ${animDelay}s infinite alternate`;
-
-                            particlesContainer.appendChild(particle);
-                        }
+                // Create enhanced particles with unique movement
+                createEnhancedParticles();
+                
+                // Back to top button functionality
+                const backToTopButton = document.getElementById('back-to-top');
+                
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 300) {
+                        backToTopButton.classList.add('show');
+                    } else {
+                        backToTopButton.classList.remove('show');
                     }
-                } catch (particleError) {
-                    console.log('Note: Could not create particle animation');
-                }
-
-                // Animate counters
-                try {
-                    const counters = document.querySelectorAll('.stats-counter');
-                    const speed = 200;
-
-                    counters.forEach(counter => {
-                        const target = parseInt(counter.getAttribute('data-count'));
-                        const count = 0;
-                        const increment = Math.ceil(target / speed);
-
-                        function updateCount() {
-                            const currentCount = parseInt(counter.innerText);
-                            if (currentCount < target) {
-                                counter.innerText = Math.min(currentCount + increment, target);
-                                setTimeout(updateCount, 20);
-                            }
-                        }
-
-                        // Start counting when element is in view
-                        const observer = new IntersectionObserver((entries) => {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting) {
-                                    counter.innerText = count;
-                                    updateCount();
-                                    observer.unobserve(entry.target);
-                                }
-                            });
-                        });
-
-                        observer.observe(counter);
-                    });
-                } catch (counterError) {
-                    console.log('Note: Could not animate counters');
-                }
-
-                // Implement smooth scrolling
-                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                    anchor.addEventListener('click', function (e) {
-                        e.preventDefault();
-
-                        const targetId = this.getAttribute('href');
-                        if (!targetId) return;
-
-                        const targetElement = document.querySelector(targetId);
-                        if (!targetElement) return;
-
-                        window.scrollTo({
-                            top: targetElement.offsetTop,
-                            behavior: 'smooth'
-                        });
+                });
+                
+                backToTopButton.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
                     });
                 });
-
-                // Particle animation
-                document.head.insertAdjacentHTML('beforeend', `
-                    <style>
-                        @keyframes float {
-                            0% { transform: translate(0, 0) rotate(0deg); }
-                            50% { transform: translate(20px, -20px) rotate(180deg); }
-                            100% { transform: translate(-20px, 20px) rotate(360deg); }
-                        }
-                    </style>
-                `);
+                
+                // Add external link indicators for links with target="_blank"
+                document.querySelectorAll('a[target="_blank"]').forEach(link => {
+                    if (!link.classList.contains('external-link-indicator')) {
+                        link.classList.add('external-link-indicator');
+                    }
+                });
+                
+                // Enhanced stats counter with improved easing function
+                animateStatsCounters();
+                
+                // Implement improved smooth scrolling with offset
+                implementSmoothScrolling();
+                
+                // Add subtle parallax effect to hero sections
+                implementParallaxEffect();
+                
+                // Set up Intersection Observer for scroll-triggered animations
+                setupScrollObserver();
 
             } catch (error) {
                 console.log('Error initializing scripts:', error);
             }
         });
+
+        // Create enhanced particles with unique movement patterns
+        function createEnhancedParticles() {
+            try {
+                const particlesContainer = document.getElementById('particles-container');
+                if (!particlesContainer) return;
+                
+                // Clear existing particles
+                particlesContainer.innerHTML = '';
+                
+                // Create particles with more variety and complexity
+                for (let i = 0; i < 40; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // More varied sizes
+                    const size = Math.random() * 8 + 1;
+                    
+                    // Random position
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    
+                    // More color variety - use blue tones to match theme
+                    const hue = Math.floor(Math.random() * 60) + 200; // Blue range
+                    const saturation = Math.floor(Math.random() * 40) + 60; // Moderate to high saturation
+                    const lightness = Math.floor(Math.random() * 30) + 60; // Light colors
+                    const alpha = Math.random() * 0.2 + 0.1; // Low opacity
+                    
+                    const color = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
+                    
+                    // Apply styles
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${posX}%`;
+                    particle.style.top = `${posY}%`;
+                    particle.style.backgroundColor = color;
+                    
+                    // Create unique animation for each particle
+                    const duration = Math.random() * 25 + 15;
+                    const delay = Math.random() * 10;
+                    const uniqueX = (Math.random() - 0.5) * 60;
+                    const uniqueY = (Math.random() - 0.5) * 60;
+                    
+                    // Create a unique keyframe animation name
+                    const animName = `float-${i}`;
+                    
+                    // Define the animation
+                    const keyframes = `
+                        @keyframes ${animName} {
+                            0% { 
+                                transform: translate(0, 0) rotate(0deg); 
+                            }
+                            33% { 
+                                transform: translate(${uniqueX}px, ${uniqueY}px) rotate(120deg); 
+                            }
+                            66% { 
+                                transform: translate(${-uniqueY}px, ${uniqueX}px) rotate(240deg); 
+                            }
+                            100% { 
+                                transform: translate(0, 0) rotate(360deg); 
+                            }
+                        }
+                    `;
+                    
+                    // Add the animation to the stylesheet
+                    const styleElem = document.createElement('style');
+                    styleElem.textContent = keyframes;
+                    document.head.appendChild(styleElem);
+                    
+                    // Apply the animation
+                    particle.style.animation = `${animName} ${duration}s ease-in-out ${delay}s infinite`;
+                    
+                    // Add to container
+                    particlesContainer.appendChild(particle);
+                }
+            } catch (error) {
+                console.log('Could not create particles:', error);
+            }
+        }
+
+        // Animate stats counters with improved easing
+        function animateStatsCounters() {
+            try {
+                const counters = document.querySelectorAll('.stats-counter');
+                
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-count'));
+                    
+                    // Custom easing function for smoother animation
+                    function easeOutQuart(t) {
+                        return 1 - Math.pow(1 - t, 4);
+                    }
+                    
+                    // Use Intersection Observer to start animation when counter is visible
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                let startTime = null;
+                                const duration = 2000; // 2 seconds
+                                
+                                function animate(timestamp) {
+                                    if (!startTime) startTime = timestamp;
+                                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                                    const easedProgress = easeOutQuart(progress);
+                                    
+                                    counter.textContent = Math.floor(easedProgress * target);
+                                    
+                                    if (progress < 1) {
+                                        requestAnimationFrame(animate);
+                                    } else {
+                                        counter.textContent = target; // Ensure final value is exact
+                                    }
+                                }
+                                
+                                requestAnimationFrame(animate);
+                                observer.unobserve(counter);
+                            }
+                        });
+                    }, { threshold: 0.5 });
+                    
+                    observer.observe(counter);
+                });
+            } catch (error) {
+                console.log('Could not animate counters:', error);
+            }
+        }
+
+        // Implement smooth scrolling with offset
+        function implementSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (!targetId || targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (!targetElement) return;
+                    
+                    // Calculate offset for header
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+
+        // Add subtle parallax effect to hero sections
+        function implementParallaxEffect() {
+            const heroLeft = document.querySelector('.hero-left');
+            const heroRight = document.querySelector('.hero-right');
+            
+            if (heroLeft && heroRight) {
+                window.addEventListener('scroll', () => {
+                    const scrollPosition = window.scrollY;
+                    if (scrollPosition < window.innerHeight) {
+                        // Subtle movement based on scroll position
+                        heroLeft.style.transform = `translateY(${scrollPosition * 0.05}px)`;
+                        heroRight.style.transform = `translateY(${scrollPosition * 0.08}px)`;
+                    }
+                });
+            }
+        }
+
+        // Set up Intersection Observer for scroll-triggered animations
+        function setupScrollObserver() {
+            // Elements to observe for animation
+            const elements = document.querySelectorAll('.step-card, .card, .language-bars');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        
+                        // Add specific animation based on element type
+                        if (entry.target.classList.contains('step-card')) {
+                            entry.target.style.transform = 'translateY(0) scale(1)';
+                            entry.target.style.opacity = '1';
+                        }
+                    }
+                });
+            }, { threshold: 0.15 });
+            
+            elements.forEach(element => {
+                // Set initial state for animations
+                if (element.classList.contains('step-card')) {
+                    element.style.transform = 'translateY(20px) scale(0.95)';
+                    element.style.opacity = '0.7';
+                }
+                
+                observer.observe(element);
+            });
+        }
     </script>
 </body>
 
