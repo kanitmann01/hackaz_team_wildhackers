@@ -541,6 +541,14 @@ def handle_audio(data):
             return
     
     try:
+        # Reset ASR and MT contexts for new utterance
+        if user_id == session.user1_id:
+            session.asr_1to2.reset_context()
+            session.mt_1to2.reset_context()
+        else:
+            session.asr_2to1.reset_context()
+            session.mt_2to1.reset_context()
+        
         # Decode audio
         audio_bytes = base64.b64decode(audio_data_b64)
         audio_data = np.frombuffer(audio_bytes, dtype=np.float32)
@@ -548,6 +556,7 @@ def handle_audio(data):
         # Process audio
         result = session.process_audio(user_id, audio_data)
         
+        # Rest of the function remains unchanged...
         # Room ID for this session
         room = f"session_{session_id}"
         

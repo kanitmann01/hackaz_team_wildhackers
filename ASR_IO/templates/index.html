@@ -929,6 +929,202 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
     <script>
+        // Define ISO language mappings
+        const ISO_LANGUAGES = {
+            "en": "English",
+            "es": "Spanish",
+            "fr": "French",
+            "de": "German",
+            "it": "Italian",
+            "pt": "Portuguese",
+            "ru": "Russian",
+            "zh": "Chinese",
+            "ja": "Japanese",
+            "ko": "Korean",
+            "ar": "Arabic",
+            "hi": "Hindi",
+            "bn": "Bengali",
+            "sw": "Swahili",
+            "ur": "Urdu",
+            "vi": "Vietnamese",
+            "te": "Telugu",
+            "ta": "Tamil",
+            "mr": "Marathi",
+            "th": "Thai"
+        };
+
+        // Dictionary of quick phrases in different languages
+        const quickPhrasesTranslations = {
+            "en": [
+                "Hello, nice to meet you",
+                "Could you speak slower please?",
+                "I don't understand",
+                "Thank you very much",
+                "Where is the bathroom?"
+            ],
+            "es": [
+                "Hola, encantado de conocerte",
+                "¿Podrías hablar más despacio, por favor?",
+                "No entiendo",
+                "Muchas gracias",
+                "¿Dónde está el baño?"
+            ],
+            "fr": [
+                "Bonjour, ravi de vous rencontrer",
+                "Pourriez-vous parler plus lentement, s'il vous plaît?",
+                "Je ne comprends pas",
+                "Merci beaucoup",
+                "Où sont les toilettes?"
+            ],
+            "de": [
+                "Hallo, schön dich kennenzulernen",
+                "Könntest du bitte langsamer sprechen?",
+                "Ich verstehe nicht",
+                "Vielen Dank",
+                "Wo ist die Toilette?"
+            ],
+            "it": [
+                "Ciao, piacere di conoscerti",
+                "Potresti parlare più lentamente, per favore?",
+                "Non capisco",
+                "Grazie mille",
+                "Dov'è il bagno?"
+            ],
+            "pt": [
+                "Olá, prazer em conhecê-lo",
+                "Poderia falar mais devagar, por favor?",
+                "Eu não entendo",
+                "Muito obrigado",
+                "Onde fica o banheiro?"
+            ],
+            "ru": [
+                "Здравствуйте, приятно познакомиться",
+                "Вы не могли бы говорить помедленнее, пожалуйста?",
+                "Я не понимаю",
+                "Большое спасибо",
+                "Где находится ванная комната?"
+            ],
+            "zh": [
+                "你好，很高兴认识你",
+                "你能说慢一点吗？",
+                "我不明白",
+                "非常感谢",
+                "洗手间在哪里？"
+            ],
+            "ja": [
+                "こんにちは、はじめまして",
+                "もう少しゆっくり話していただけますか？",
+                "わかりません",
+                "どうもありがとうございます",
+                "お手洗いはどこですか？"
+            ],
+            "ko": [
+                "안녕하세요, 만나서 반갑습니다",
+                "천천히 말씀해 주시겠어요?",
+                "이해가 안 됩니다",
+                "정말 감사합니다",
+                "화장실이 어디에 있나요?"
+            ],
+            "ar": [
+                "مرحبا، سعيد بلقائك",
+                "هل يمكنك التحدث ببطء أكثر من فضلك؟",
+                "أنا لا أفهم",
+                "شكرا جزيلا",
+                "أين الحمام؟"
+            ],
+            "hi": [
+                "नमस्ते, आपसे मिलकर अच्छा लगा",
+                "क्या आप धीरे बोल सकते हैं?",
+                "मुझे समझ नहीं आया",
+                "बहुत-बहुत धन्यवाद",
+                "बाथरूम कहां है?"
+            ],
+            "bn": [
+                "হ্যালো, আপনার সাথে দেখা করে ভালো লাগলো",
+                "আপনি কি আরও ধীরে কথা বলতে পারেন?",
+                "আমি বুঝতে পারছি না",
+                "অনেক ধন্যবাদ",
+                "বাথরুম কোথায়?"
+            ],
+            "sw": [
+                "Hujambo, nimefurahi kukutana nawe",
+                "Unaweza kuzungumza polepole tafadhali?",
+                "Sielewi",
+                "Asante sana",
+                "Choo kiko wapi?"
+            ],
+            "ur": [
+                "السلام علیکم، آپ سے مل کر خوشی ہوئی",
+                "کیا آپ آہستہ بول سکتے ہیں؟",
+                "مجھے سمجھ نہیں آ رہا",
+                "بہت شکریہ",
+                "باتھ روم کہاں ہے؟"
+            ],
+            "vi": [
+                "Xin chào, rất vui được gặp bạn",
+                "Bạn có thể nói chậm hơn được không?",
+                "Tôi không hiểu",
+                "Cảm ơn rất nhiều",
+                "Nhà vệ sinh ở đâu?"
+            ],
+            "te": [
+                "హలో, మిమ్మల్ని కలవడం చాలా సంతోషంగా ఉంది",
+                "మీరు నెమ్మదిగా మాట్లాడగలరా?",
+                "నాకు అర్థం కాలేదు",
+                "చాలా ధన్యవాదాలు",
+                "బాత్రూమ్ ఎక్కడ ఉంది?"
+            ],
+            "ta": [
+                "வணக்கம், உங்களைச் சந்தித்ததில் மகிழ்ச்சி",
+                "நீங்கள் மெதுவாகப் பேச முடியுமா?",
+                "எனக்கு புரியவில்லை",
+                "மிக்க நன்றி",
+                "கழிவறை எங்கே?"
+            ],
+            "mr": [
+                "नमस्कार, आपल्याला भेटून आनंद झाला",
+                "तुम्ही हळू बोलू शकता का?",
+                "मला समजत नाही",
+                "खूप धन्यवाद",
+                "बाथरूम कुठे आहे?"
+            ],
+            "th": [
+                "สวัสดี ยินดีที่ได้รู้จัก",
+                "คุณพูดช้าลงได้ไหม?",
+                "ฉันไม่เข้าใจ",
+                "ขอบคุณมาก",
+                "ห้องน้ำอยู่ที่ไหน?"
+            ]
+        };
+        
+        // Helper function to get language code from name
+        function getLanguageCode(languageName) {
+            for (const [code, name] of Object.entries(ISO_LANGUAGES)) {
+                if (name === languageName) {
+                    return code;
+                }
+            }
+            return "en"; // Default to English
+        }
+        
+        // Function to update quick phrases based on language
+        function updateQuickPhrases(languageCode) {
+            // Default to English if language not found
+            const phrases = quickPhrasesTranslations[languageCode] || quickPhrasesTranslations["en"];
+            
+            // Get all phrase buttons
+            const phraseButtons = document.querySelectorAll('.quick-phrase-btn');
+            
+            // Update each button with the translated phrase
+            phraseButtons.forEach((button, index) => {
+                if (index < phrases.length) {
+                    button.textContent = phrases[index];
+                }
+            });
+            
+            console.log(`Updated quick phrases to ${languageCode}`);
+        }
+
         // DOM Elements
         const welcomeScreen = document.getElementById('welcome-screen');
         const createScreen = document.getElementById('create-screen');
@@ -1001,8 +1197,8 @@
         let isRecording = false;
         let mediaRecorder = null;
         let audioChunks = [];
-        let yourLanguage = 'English';
-        let theirLanguage = 'Spanish';
+        let yourLanguage = 'Hindi';
+        let theirLanguage = 'English';
         let pingInterval;
         
         // Mock audio level for demo
@@ -1141,27 +1337,9 @@
             "The human brain processes speech at about 3 words per second.",
             "Sign language has its own grammar, syntax, and regional accents.",
             "Without speaking, humans can still express over 250,000 facial expressions.",
-            
-            // Mario quotes
-            "It's-a me, Mario!",
-            "Let's-a go!",
-            "Mamma mia!",
-            "Wahoo!",
-            "Here we go!",
-            "Thank you so much for playing my game!",
-            "Yahoo!",
-            "Okey-dokey!",
-            "Oh yeah! Mario time!",
-            "Just what I needed!",
-            
-            // Minecraft quotes
+            "The longest word in English is 'pneumonoultramicroscopicsilicovolcanoconiosis'.",
+            "The word 'set' has the highest number of definitions in the Oxford English Dictionary.",
             "Block by block, building something amazing...",
-            "Don't dig straight down!",
-            "Creeper? Aww man...",
-            "One more block, one more hour of gameplay.",
-            "Diamonds are a player's best friend.",
-            "The night is full of monsters, but the dawn brings new possibilities.",
-            "Everything is better with friends - even fighting Endermen.",
             "The journey of a thousand blocks begins with a single step.",
             "The End is just the beginning.",
             "Home is where your bed is."
@@ -1197,21 +1375,8 @@
         
         async function fetchLanguages() {
             try {
-                // In a real app, you'd fetch this from your server
-                const languages = {
-                    "en": "English",
-                    "es": "Spanish",
-                    "fr": "French",
-                    "de": "German",
-                    "it": "Italian",
-                    "pt": "Portuguese",
-                    "ru": "Russian",
-                    "zh": "Chinese",
-                    "ja": "Japanese",
-                    "ko": "Korean",
-                    "ar": "Arabic",
-                    "hi": "Hindi"
-                };
+                // Use our ISO_LANGUAGES object defined above
+                const languages = ISO_LANGUAGES;
                 
                 // Populate dropdowns
                 for (const [code, name] of Object.entries(languages)) {
@@ -1227,9 +1392,12 @@
                     theirLanguageSelect.appendChild(option2);
                 }
                 
-                // Default to English for user, Spanish for other
-                yourLanguageSelect.value = 'en';
-                theirLanguageSelect.value = 'es';
+                // Default to Hindi for user, English for other
+                yourLanguageSelect.value = 'hi';
+                theirLanguageSelect.value = 'en';
+                
+                console.log("Setting default languages: Hindi -> English");
+                console.log("Language values set to:", yourLanguageSelect.value, theirLanguageSelect.value);
             } catch (error) {
                 console.error('Error fetching languages:', error);
                 showToast('Failed to load languages. Please refresh the page.');
@@ -1244,6 +1412,9 @@
             
             yourLanguage = yourLanguageSelect.options[yourLanguageSelect.selectedIndex].text;
             theirLanguage = theirLanguageSelect.options[theirLanguageSelect.selectedIndex].text;
+            
+            // Update quick phrases based on user's language
+            updateQuickPhrases(userLang);
             
             try {
                 showLoading(true, 'Creating conversation...');
@@ -1315,6 +1486,12 @@
                         yourLanguageLabel.textContent = data.your_language || theirLanguage;
                         theirLanguageLabel.textContent = data.their_language || yourLanguage;
                     }
+                    
+                    // Get language code from label for quick phrases
+                    const userLangCode = Object.keys(ISO_LANGUAGES).find(
+                        code => ISO_LANGUAGES[code] === (data.your_language || yourLanguage)
+                    ) || "en";
+                    updateQuickPhrases(userLangCode);
                     
                     // Show translation screen
                     showScreen(translationScreen);
