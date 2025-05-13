@@ -131,9 +131,11 @@ class TranslationSession:
                 self.user2_text = source_text
             
             # Only continue if there's new text
+            # Only continue if there's new text
             if not asr_result['text']:
                 return {
                     'source_text': source_text,
+                    'new_source_text': '', # <--- Add this line
                     'translated_text': is_user1 and self.user1_translation or self.user2_translation,
                     'new_audio': None
                 }
